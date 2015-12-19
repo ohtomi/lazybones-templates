@@ -1,0 +1,137 @@
+plugins {
+  id 'java'
+  id 'application'
+  id 'eu.appsatori.fatjar' version '0.3'
+  id 'checkstyle'
+  id 'findbugs'
+  id 'jacoco'
+}
+
+/*
+ * java plugin settings
+ */
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+processResources {
+  project.ext['project_native2ascii_files'].tokenize(',').each {
+    filesMatching('**/*.' + it) {
+      filter(org.apache.tools.ant.filters.EscapeUnicode)
+    }
+  }
+}
+
+jar {
+  baseName = app_name
+  version = app_version
+
+  manifest {
+    attributes(
+      'Main-Class': app_main_class,
+      'Implementation-Title': app_name,
+      'Implementation-Version': app_version)
+  }
+}
+
+test {
+  maxParallelForks = 1
+  forkEvery = 100
+  minHeapSize = '128m'
+  maxHeapSize = '128m'
+  jvmArgs = ['-XX:+UseG1GC']
+}
+
+/*
+ * application plugin settings
+ */
+applicationName = app_name
+mainClassName = app_main_class
+
+/*
+ * fatjar plugin settings
+ */
+fatJar {
+  baseName = app_name
+  version app_version
+  classifier 'all-in-one'
+
+  manifest {
+    attributes(
+      'Main-Class': app_main_class,
+      'Implementation-Title': app_name,
+      'Implementation-Version': app_version)
+  }
+}
+
+/*
+ * checkstyle plugin settings
+ */
+checkstyle {
+  configFile = file('gradle/checkstyle/sun_checks.xml')
+  toolVersion = '6.7'
+  ignoreFailures = true
+  sourceSets = [sourceSets.main]
+}
+
+/*
+ * findbugs plugin settings
+ */
+findbugs {
+  toolVersion = '3.0.1'
+  ignoreFailures = true
+  sourceSets = [sourceSets.main]
+}
+
+/*
+ * jacoco plugin settings
+ */
+jacoco {
+  toolVersion = '0.7.5.201505241946'
+}
+
+/*
+ * javac encoding settings
+ */
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+//tasks.withType(JavaCompile){ options.encoding = 'UTF-8' }
+
+/*
+ * dependency settings
+ */
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile 'org.slf4j:slf4j-api:1.7.12'
+  compile 'ch.qos.logback:logback-classic:1.1.3'
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-core:1.10.19'
+}
+
+/*
+ * task definitions
+ */
+task initDirs(description: '''Creates 'java' and 'resources' directories under all sourceSets''') << {
+  sourceSets*.java.srcDirs*.each {
+    it.mkdirs()
+  }
+  sourceSets*.resources.srcDirs*.each {
+    it.mkdirs()
+  }
+}
+
+tasks.addRule('''Pattern: copyProfileResource<ProfileName>: Copies the resource files of a profile.''') {
+  taskName ->
+  def profileName = taskName.replace('copyProfileResource', '').toLowerCase()
+  if (taskName.startsWith('copyProfileResource')) {
+    task (taskName, type: Copy) {
+      from "profiles/${profileName}"
+      into sourceSets.main.output.resourcesDir
+    }
+  }
+}
+def activeProfileName = project_active_profile.substring(0, 1).toUpperCase() + \
+                        project_active_profile.substring(1).toLowerCase()
+def taskName = 'copyProfileResource' + activeProfileName
+classes.dependsOn taskName
