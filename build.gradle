@@ -6,14 +6,14 @@ buildscript {
     }
 
     dependencies {
-        classpath "uk.co.cacoethes:lazybones-gradle:1.2.1"
+        classpath "uk.co.cacoethes:lazybones-gradle:1.2.4"
     }
 }
 
 apply plugin: "uk.co.cacoethes.lazybones-templates"
 
 lazybones {
-    repositoryName = "<account>/<templates-repo>"
+    repositoryName = "ohtomi/lazybones-templates"
 
     // It's best to pull this information from a gradle.properties file in the
     // root directory. For example, gradle.properties could contain:
@@ -23,6 +23,11 @@ lazybones {
     //
     // You could then set the following properties to `project.bintrayUsername`
     // and `project.bintrayApiKey` respectively.
-    repositoryUsername = "your_bintray_username"
-    repositoryApiKey = "your_bintray_api_key"
+    repositoryUsername = project.bintray_username
+    repositoryApiKey = project.bintray_api_key
+
+    licenses = ["MIT"]
+    vcsUrl = "https://github.com/ohtomi/lazybones-templates"
+
+    publish = true
 }
