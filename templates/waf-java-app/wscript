@@ -3,9 +3,9 @@
 
 import os
 
-APPNAME = '${app_name}'
-VERSION = '${app_version}'
-MAIN_CLASS = '${app_main_class}'
+APPNAME = '{{app_name}}'
+VERSION = '{{app_version}}'
+MAIN_CLASS = '{{app_main_class}}'
 
 top = '.'
 out = OUTPUT_MAIN = 'build'
@@ -27,7 +27,7 @@ def build(ctx):
                 _copy_resources_task(os.path.join(current_dir, file), os.path.join(relative_dir, file))
             else:
                 ctx(name = 'copy_resources',
-                        rule = 'cp \\\${SRC} \\\${TGT}',
+                        rule = 'cp ${SRC} ${TGT}',
                         source = os.path.join(current_dir, file),
                         target = os.path.join('classes/main', relative_dir, file)
                 )
