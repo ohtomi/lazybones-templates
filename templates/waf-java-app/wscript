@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+
+APPNAME = '${app_name}'
+VERSION = '${app_version}'
+MAIN_CLASS = '${app_main_class}'
+
+top = '.'
+out = OUTPUT_MAIN = 'build'
+
+
+def options(ctx):
+    pass
+
+
+def configure(ctx):
+    ctx.load('java')
+    ctx.load('junit', tooldir = '.wscript')
+
+
+def build(ctx):
+    def _copy_resources_task(current_dir, relative_dir):
+        for file in os.listdir(current_dir):
+            if os.path.isdir(os.path.join(current_dir, file)):
+                _copy_resources_task(os.path.join(current_dir, file), os.path.join(relative_dir, file))
+            else:
+                ctx(name = 'copy_resources',
+                        rule = 'cp \\\${SRC} \\\${TGT}',
+                        source = os.path.join(current_dir, file),
+                        target = os.path.join('classes/main', relative_dir, file)
+                )
+    _copy_resources_task('src/main/resources', '')
+
+    ctx(name = 'compile_and_test',
+            features = 'javac junit',
+            srcdir = 'src/main/java',
+            srcdir_test = 'src/test/java',
+            sourcepath = ['src/main/java'],
+            sourcepath_test = ['src/test/java'],
+            classpath = ['../lib/main/*'],
+            classpath_test = ['../lib/test/*'],
+            outdir = 'classes/main',
+            outdir_test = 'classes/test',
+            compat = '1.8'
+    )
+
+    ctx(name = 'create_jar_file', use = 'compile_and_test copy_resources',
+            features = 'jar',
+            basedir = 'classes/main',
+            destfile = '%s-%s.jar' % (APPNAME, VERSION),
+    )
+
+    javadoc_packages = []
+    for file in os.listdir('src/main/java'):
+        if os.path.isdir(os.path.join('src/main/java', file)):
+            javadoc_packages.append(file)
+    ctx(name = 'generate_javadoc',
+            features = 'javadoc',
+            srcdir = 'src/main/java',
+            javadoc_package = javadoc_packages,
+            javadoc_output = 'javadoc',
+    )
+
+
+def dist(ctx):
+    ctx.base_name = '%s-%s-sources' % (APPNAME, VERSION)
+    ctx.algo = 'zip'
+
+
+def run_main(ctx):
+    import subprocess
+    subprocess.call(['java', '-cp', 'lib/main/*:%s/%s-%s.jar' % (OUTPUT_MAIN, APPNAME, VERSION), MAIN_CLASS])
