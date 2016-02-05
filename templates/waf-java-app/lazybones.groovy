@@ -10,3 +10,8 @@ props.app_main_class = ask("Define value for 'main class' [org.example.Main]: ",
 
 processTemplates 'README.md', props
 processTemplates 'wscript', props
+
+def gitignore = new File(projectDir.name + '/gitignore')
+if (gitignore.exists()) {
+    gitignore.renameTo(projectDir.name + '/.gitignore')
+}

@@ -5,3 +5,8 @@ props.lib_version = ask("Define value for 'version' [0.1]: ", '0.1', 'lib_versio
 
 processTemplates 'README.md', props
 processTemplates 'gradle.properties', props
+
+def gitignore = new File(projectDir.name + '/gitignore')
+if (gitignore.exists()) {
+    gitignore.renameTo(projectDir.name + '/.gitignore')
+}

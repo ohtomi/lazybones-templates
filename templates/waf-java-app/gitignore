@@ -1,3 +1,4 @@
+.lazybones
 build
 .waf-*
 .lock-*
