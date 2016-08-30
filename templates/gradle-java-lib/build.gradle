@@ -5,19 +5,13 @@ plugins {
   id 'jacoco'
 }
 
+
 /*
  * java plugin settings
  */
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-processResources {
-  project.ext['project_native2ascii_files'].tokenize(',').each {
-    filesMatching('**/*.' + it) {
-      filter(org.apache.tools.ant.filters.EscapeUnicode)
-    }
-  }
-}
 
 jar {
   baseName = lib_name
@@ -70,6 +64,7 @@ jacoco {
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 //tasks.withType(JavaCompile){ options.encoding = 'UTF-8' }
 
+
 /*
  * dependency settings
  */
@@ -83,30 +78,3 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.10.19'
 }
-
-/*
- * task definitions
- */
-task initDirs(description: '''Creates 'java' and 'resources' directories under all sourceSets''') << {
-  sourceSets*.java.srcDirs*.each {
-    it.mkdirs()
-  }
-  sourceSets*.resources.srcDirs*.each {
-    it.mkdirs()
-  }
-}
-
-tasks.addRule('''Pattern: copyProfileResource<ProfileName>: Copies the resource files of a profile.''') {
-  taskName ->
-  def profileName = taskName.replace('copyProfileResource', '').toLowerCase()
-  if (taskName.startsWith('copyProfileResource')) {
-    task (taskName, type: Copy) {
-      from "profiles/${profileName}"
-      into sourceSets.main.output.resourcesDir
-    }
-  }
-}
-def activeProfileName = project_active_profile.substring(0, 1).toUpperCase() + \
-                        project_active_profile.substring(1).toLowerCase()
-def taskName = 'copyProfileResource' + activeProfileName
-classes.dependsOn taskName
