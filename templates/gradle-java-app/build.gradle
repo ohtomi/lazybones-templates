@@ -25,11 +25,12 @@ mainClassName = app_main_class
 group = app_group
 version = app_version
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-//tasks.withType(JavaCompile){ options.encoding = 'UTF-8' }
+tasks.withType(JavaCompile){
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+}
 
 jar {
     baseName = app_name

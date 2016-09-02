@@ -21,11 +21,12 @@ dependencies {
 group = lib_group
 version = lib_version
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-//tasks.withType(JavaCompile){ options.encoding = 'UTF-8' }
+tasks.withType(JavaCompile){
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+}
 
 jar {
     baseName = lib_name
