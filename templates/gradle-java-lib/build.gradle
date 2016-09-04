@@ -48,7 +48,7 @@ test {
 }
 
 checkstyle {
-    configFile = file('gradle/checkstyle/sun_checks.xml')
+    configFile = file('checkstyle.xml')
     toolVersion = '6.7'
     ignoreFailures = true
     sourceSets = [sourceSets.main]
