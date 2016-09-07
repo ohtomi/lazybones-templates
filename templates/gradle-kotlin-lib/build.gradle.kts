@@ -1,6 +1,5 @@
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.dokka.gradle.LinkMapping
 
 
 buildscript {
@@ -26,7 +25,6 @@ apply {
 
 repositories {
     gradleScriptKotlin()
-    jcenter()
 }
 
 dependencies {
