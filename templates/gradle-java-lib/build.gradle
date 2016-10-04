@@ -7,6 +7,7 @@ plugins {
 
 
 repositories {
+    jcenter()
 }
 
 dependencies {
@@ -44,7 +45,7 @@ test {
 
 checkstyle {
     configFile = file('checkstyle.xml')
-    toolVersion = '6.7'
+    toolVersion = '7.1.2'
     ignoreFailures = true
     sourceSets = [sourceSets.main]
 }
