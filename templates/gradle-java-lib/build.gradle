@@ -1,8 +1,14 @@
 plugins {
     id 'java'
+<% if (use_checkstyle) { %>\
     id 'checkstyle'
+<% } %>\
+<% if (use_findbugs) { %>\
     id 'findbugs'
+<% } %>\
+<% if (use_jacoco) { %>\
     id 'jacoco'
+<% } %>\
 }
 
 
@@ -43,19 +49,26 @@ test {
     jvmArgs = ['-XX:+UseG1GC']
 }
 
+<% if (use_checkstyle) { %>\
 checkstyle {
     configFile = file('checkstyle.xml')
-    toolVersion = '7.1.2'
+    toolVersion = '${checkstyle_version}'
     ignoreFailures = true
     sourceSets = [sourceSets.main]
 }
 
+<% } %>\
+<% if (use_findbugs) { %>\
 findbugs {
-    toolVersion = '3.0.1'
+    toolVersion = '${findbugs_version}'
     ignoreFailures = true
     sourceSets = [sourceSets.main]
 }
 
+<% } %>\
+<% if (use_jacoco) { %>\
 jacoco {
-    toolVersion = '0.7.5.201505241946'
+    toolVersion = '${jacoco_version}'
 }
+
+<% } %>\
