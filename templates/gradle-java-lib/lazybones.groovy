@@ -27,7 +27,7 @@ processTemplates 'README.md', props
 processTemplates 'build.gradle', props
 processTemplates 'gradle.properties', props
 
-def gitignore = new File(projectDir.name + '/gitignore')
+def gitignore = new File(projectDir.getAbsolutePath() + '/gitignore')
 if (gitignore.exists()) {
-    gitignore.renameTo(projectDir.name + '/.gitignore')
+    gitignore.renameTo(projectDir.getAbsolutePath() + '/.gitignore')
 }
