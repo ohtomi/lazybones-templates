@@ -3,8 +3,8 @@ import org.jetbrains.dokka.gradle.DokkaTask
 
 
 buildscript {
-    extra["kotlin_version"] = "1.0.3"
-    extra["dokka_version"] = "0.9.9"
+    extra["kotlin_version"] = "1.1.1"
+    extra["dokka_version"] = "0.9.13"
 
     repositories {
         gradleScriptKotlin()
