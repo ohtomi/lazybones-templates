@@ -24,6 +24,9 @@ buildscript {
 }
 
 apply {
+<% if (use_application) { %>\
+    plugin("application")
+<% } %>\
     plugin("kotlin")
 <% if (use_dokka) { %>\
     plugin("org.jetbrains.dokka")
@@ -43,10 +46,20 @@ dependencies {
 group = project.properties["lib_group"] as String
 version = project.properties["lib_version"] as String
 
+<% if (use_application) { %>\
+configure<ApplicationPluginConvention> {
+    applicationName = project.properties["lib_name"] as String
+    mainClassName = project.properties["lib_main_class"] as String
+}
+<% } %>\
+
 tasks.withType<Jar> {
     baseName = project.properties["lib_name"] as String
 
     manifest.apply {
+<% if (use_application) { %>\
+        attributes["Main-Class"] = project.properties["lib_main_class"]
+<% } %>\
         attributes["Implementation-Title"] = project.properties["lib_name"]
         attributes["Implementation-Version"] = project.properties["lib_version"]
     }

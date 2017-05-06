@@ -16,6 +16,10 @@ props.kotlin_version = ask("version: (1.1.0) ", '1.1.0', 'kotlin_version')
 
 println ''
 println '[Gradle plugin]'
+props.use_application = ask("use application? (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
+if (props.use_application) {
+    props.lib_main_class = ask("application main class: ", '', 'lib_main_class')
+}
 props.use_dokka = ask("use dokka? (yes) [yes/no] ", "yes") ==~ /(?i)y(es)?/
 
 processTemplates 'README.md', props
