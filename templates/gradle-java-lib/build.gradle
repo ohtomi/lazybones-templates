@@ -1,4 +1,7 @@
 plugins {
+<% if (use_application) { %>\
+    id 'application'
+<% } %>\
     id 'java'
 <% if (use_checkstyle) { %>\
     id 'checkstyle'
@@ -20,13 +23,18 @@ dependencies {
 }
 
 
+<% if (use_application) { %>\
+applicationName = lib_name
+mainClassName = lib_main_class
+<% } %>\
+
 group = lib_group
 version = lib_version
 
 
 tasks.withType(JavaCompile){
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = '${java_version}'
+    targetCompatibility = '${java_version}'
     options.encoding = 'UTF-8'
 }
 
@@ -35,6 +43,9 @@ jar {
 
     manifest {
         attributes(
+<% if (use_application) { %>\
+            'Main-Class': lib_main_class,
+<% } %>\
             'Implementation-Title': lib_name,
             'Implementation-Version': lib_version
         )

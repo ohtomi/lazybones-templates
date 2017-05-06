@@ -2,11 +2,7 @@
 
 ## Description
 
-TODO
-
-## Requirements
-
-TODO
+${lib_description}
 
 ## Usage
 
@@ -22,4 +18,4 @@ TODO
 
 ## License
 
-TODO
+${lib_license}
