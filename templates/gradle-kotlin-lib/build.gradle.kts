@@ -7,7 +7,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 buildscript {
     extra["kotlin_version"] = "${kotlin_version}"
 <% if (use_dokka) { %>\
-    extra["dokka_version"] = "0.9.13"
+    extra["dokka_version"] = "0.9.14"
 <% } %>\
 
     repositories {
@@ -67,7 +67,7 @@ tasks.withType<Jar> {
 
 <% if (use_dokka) { %>\
 tasks.withType<DokkaTask> {
-    outputFormat = "javadoc"
+    outputFormat = "html"
     outputDirectory = "\${buildDir.absolutePath}/javadoc"
     sourceDirs = files("src/main/kotlin")
 }
