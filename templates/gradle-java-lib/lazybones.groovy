@@ -14,33 +14,16 @@ println ''
 println '[Java]'
 props.java_version = ask("version: (1.8) ", '1.8', 'java_version')
 
-println ''
-println '[Gradle plugin]'
-
-props.use_application = ask("use application? (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
-if (props.use_application) {
+props.is_application = ask("application? (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
+if (props.is_application) {
     props.lib_main_class = ask("application main class: ", '', 'lib_main_class')
 }
 
-props.use_checkstyle = ask("use checkstyle: (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
-if (props.use_checkstyle) {
-  props.checkstyle_version = ask("checkstyle version: (7.1.2) ", '7.1.2')
-} else {
-  checkstyle_xml = new File(projectDir.name + '/checkstyle.xml')
-  if (checkstyle_xml.exists()) {
-    checkstyle_xml.delete()
-  }
-}
-
-props.use_findbugs = ask("use findbugs: (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
-if (props.use_findbugs) {
-  props.findbugs_version = ask("findbugs version: (3.0.1) ", '3.0.1')
-}
-
-props.use_jacoco = ask("use jacoco: (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
-if (props.use_jacoco) {
-  props.jacoco_version = ask("jacoco version: (0.7.5.201505241946) ", '0.7.5.201505241946')
-}
+println ''
+println '[Gradle plugin]'
+props.checkstyle_version = ask("checkstyle version: (7.1.2) ", '7.1.2')
+props.findbugs_version = ask("findbugs version: (3.0.1) ", '3.0.1')
+props.jacoco_version = ask("jacoco version: (0.7.5.201505241946) ", '0.7.5.201505241946')
 
 processTemplates 'README.md', props
 processTemplates 'build.gradle', props

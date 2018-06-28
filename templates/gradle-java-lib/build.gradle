@@ -1,17 +1,11 @@
 plugins {
-<% if (use_application) { %>\
+<% if (is_application) { %>\
     id 'application'
 <% } %>\
     id 'java'
-<% if (use_checkstyle) { %>\
     id 'checkstyle'
-<% } %>\
-<% if (use_findbugs) { %>\
     id 'findbugs'
-<% } %>\
-<% if (use_jacoco) { %>\
     id 'jacoco'
-<% } %>\
 }
 
 
@@ -23,7 +17,7 @@ dependencies {
 }
 
 
-<% if (use_application) { %>\
+<% if (is_application) { %>\
 applicationName = lib_name
 mainClassName = lib_main_class
 <% } %>\
@@ -43,7 +37,7 @@ jar {
 
     manifest {
         attributes(
-<% if (use_application) { %>\
+<% if (is_application) { %>\
             'Main-Class': lib_main_class,
 <% } %>\
             'Implementation-Title': lib_name,
@@ -60,7 +54,6 @@ test {
     jvmArgs = ['-XX:+UseG1GC']
 }
 
-<% if (use_checkstyle) { %>\
 checkstyle {
     configFile = file('checkstyle.xml')
     toolVersion = '${checkstyle_version}'
@@ -68,18 +61,12 @@ checkstyle {
     sourceSets = [sourceSets.main]
 }
 
-<% } %>\
-<% if (use_findbugs) { %>\
 findbugs {
     toolVersion = '${findbugs_version}'
     ignoreFailures = true
     sourceSets = [sourceSets.main]
 }
 
-<% } %>\
-<% if (use_jacoco) { %>\
 jacoco {
     toolVersion = '${jacoco_version}'
 }
-
-<% } %>\
