@@ -1,8 +1,8 @@
-# ${lib_name}
+# ${artifact_name}
 
 ## Description
 
-${lib_description}
+${artifact_description}
 
 ## Usage
 
@@ -18,4 +18,4 @@ TODO
 
 ## License
 
-${lib_license}
+${artifact_license}

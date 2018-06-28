@@ -16,14 +16,15 @@ repositories {
 dependencies {
 }
 
-
 <% if (is_application) { %>\
-applicationName = lib_name
-mainClassName = lib_main_class
+
+applicationName = application_name
+mainClassName = application_main_class_name
 <% } %>\
 
-group = lib_group
-version = lib_version
+archivesBaseName = artifact_name
+group = artifact_group
+version = artifact_version
 
 
 tasks.withType(JavaCompile){
@@ -33,15 +34,13 @@ tasks.withType(JavaCompile){
 }
 
 jar {
-    baseName = lib_name
-
     manifest {
         attributes(
 <% if (is_application) { %>\
-            'Main-Class': lib_main_class,
+            'Main-Class': application_main_class_name,
 <% } %>\
-            'Implementation-Title': lib_name,
-            'Implementation-Version': lib_version
+            'Implementation-Title': artifact_name,
+            'Implementation-Version': artifact_version
         )
     }
 }
