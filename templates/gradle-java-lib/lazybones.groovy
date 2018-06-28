@@ -23,6 +23,8 @@ println '[Gradle plugin]'
 props.checkstyle_version = ask("checkstyle version: (7.1.2) ", '7.1.2')
 props.findbugs_version = ask("findbugs version: (3.0.1) ", '3.0.1')
 props.jacoco_version = ask("jacoco version: (0.7.5.201505241946) ", '0.7.5.201505241946')
+props.versions_version = ask("com.github.ben-manes.versions version: (0.20.0) ", '0.20.0')
+props.audit_version = ask("net.ossindex.audit version: (3.0.0) ", '0.3.19-beta')
 
 processTemplates 'README.md', props
 processTemplates 'build.gradle', props

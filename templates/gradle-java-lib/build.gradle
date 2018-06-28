@@ -6,6 +6,8 @@ plugins {
     id 'checkstyle'
     id 'findbugs'
     id 'jacoco'
+    id 'com.github.ben-manes.versions' version '${versions_version}'
+    id "net.ossindex.audit" version '${audit_version}'
 }
 
 
