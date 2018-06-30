@@ -20,9 +20,10 @@ if (props.is_application) {
 
 println ''
 println '[Gradle plugin]'
-props.checkstyle_version = ask("checkstyle version: (8.10.1) ", '8.10.1')
-props.findbugs_version = ask("findbugs version: (3.0.1) ", '3.0.1')
-props.jacoco_version = ask("jacoco version: (0.8.1) ", '0.8.1')
+props.checkstyle_version = ask("Checkstyle version: (8.10.1) ", '8.10.1')
+props.pmd_version = ask("PMD version: (6.5.0) ", '6.5.0')
+props.spotbugs_version = ask("SpotBugs version: (3.1.5) ", '3.1.5')
+props.jacoco_version = ask("JaCoCo version: (0.8.1) ", '0.8.1')
 props.versions_version = ask("com.github.ben-manes.versions version: (0.20.0) ", '0.20.0')
 props.audit_version = ask("net.ossindex.audit version: (3.0.0) ", '0.3.19-beta')
 

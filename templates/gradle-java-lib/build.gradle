@@ -1,13 +1,21 @@
+buildscript {
+    // ref. https://github.com/spotbugs/spotbugs-gradle-plugin/issues/11
+    configurations.classpath {
+        exclude group:'org.slf4j', module:'slf4j-simple'
+    }
+}
+
 plugins {
 <% if (is_application) { %>\
     id 'application'
 <% } %>\
     id 'java'
     id 'checkstyle'
-    id 'findbugs'
+    id 'pmd'
+    id 'com.github.spotbugs' version '1.6.2'
     id 'jacoco'
     id 'com.github.ben-manes.versions' version '${versions_version}'
-    id "net.ossindex.audit" version '${audit_version}'
+    id 'net.ossindex.audit' version '${audit_version}'
 }
 
 
@@ -64,11 +72,22 @@ checkstyle {
     sourceSets = [sourceSets.main]
 }
 
+// https://docs.gradle.org/current/userguide/pmd_plugin.html
+// https://pmd.github.io
+// https://github.com/pmd/pmd
+// https://github.com/pmd/pmd/tree/pmd_releases/6.5.0/pmd-java/src/main/resources/rulesets/java
+pmd {
+    toolVersion = '${pmd_version}'
+    ignoreFailures = true
+    sourceSets = [sourceSets.main]
+    ruleSets = ['java-basic', 'java-braces', 'java-codesize']
+}
+
 // https://docs.gradle.org/current/userguide/findbugs_plugin.html
-// http://findbugs.sourceforge.net
-// https://github.com/findbugsproject/findbugs
-findbugs {
-    toolVersion = '${findbugs_version}'
+// https://spotbugs.github.io
+// https://github.com/spotbugs/spotbugs
+spotbugs {
+    toolVersion = '${spotbugs_version}'
     ignoreFailures = true
     sourceSets = [sourceSets.main]
 }
