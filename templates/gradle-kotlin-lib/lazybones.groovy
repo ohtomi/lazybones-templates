@@ -12,7 +12,8 @@ props.artifact_license = ask("license: (MIT) ", 'MIT', 'artifact_license')
 
 println ''
 println '[Kotlin]'
-props.kotlin_version = ask("version: (1.1.0) ", '1.1.0', 'kotlin_version')
+// see. https://youtrack.jetbrains.com/issue/KT-21303
+props.kotlin_version = ask("version: (1.2.30) ", '1.2.30', 'kotlin_version')
 props.is_application = ask("use application? (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
 if (props.is_application) {
     props.application_main_class_name = ask("application main class: ", '', 'application_main_class_name')
