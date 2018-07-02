@@ -1,4 +1,3 @@
-import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 
@@ -20,17 +19,24 @@ dependencies {
 }
 
 
+val artifact_name: String by project
+val artifact_group: String by project
+val artifact_version: String by project
+
 base {
-    archivesBaseName = project.properties["artifact_name"] as String
-    group = project.properties["artifact_group"] as String
-    version = project.properties["artifact_version"] as String
+    archivesBaseName = artifact_name
+    group = artifact_group
+    version = artifact_version
 }
 
 <% if (is_application) { %>\
 
+val application_name: String by project
+val application_main_class_name: String by project
+
 application {
-    applicationName = project.properties["application_name"] as String
-    mainClassName = project.properties["application_main_class_name"] as String
+    applicationName = application_name
+    mainClassName = application_main_class_name
 }
 <% } %>\
 
@@ -38,10 +44,10 @@ application {
 tasks.withType<Jar> {
     manifest.apply {
 <% if (is_application) { %>\
-        attributes["Main-Class"] = project.properties["application_main_class_name"] as String
+        attributes["Main-Class"] = application_main_class_name
 <% } %>\
-        attributes["Implementation-Title"] = project.properties["artifact_name"] as String
-        attributes["Implementation-Version"] = project.properties["artifact_version"] as String
+        attributes["Implementation-Title"] = artifact_name
+        attributes["Implementation-Version"] = artifact_version
     }
 }
 
