@@ -1,14 +1,10 @@
 import org.gradle.jvm.tasks.Jar
-<% if (use_dokka) { %>\
 import org.jetbrains.dokka.gradle.DokkaTask
-<% } %>\
 
 
 buildscript {
     extra["kotlin_version"] = "${kotlin_version}"
-<% if (use_dokka) { %>\
     extra["dokka_version"] = "0.9.14"
-<% } %>\
 
     repositories {
         gradleScriptKotlin()
@@ -17,9 +13,7 @@ buildscript {
 
     dependencies {
         classpath(kotlinModule("gradle-plugin"))
-<% if (use_dokka) { %>\
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:\${extra["dokka_version"]}")
-<% } %>\
     }
 }
 
@@ -28,9 +22,7 @@ apply {
     plugin("application")
 <% } %>\
     plugin("kotlin")
-<% if (use_dokka) { %>\
     plugin("org.jetbrains.dokka")
-<% } %>\
 }
 
 
@@ -66,10 +58,8 @@ tasks.withType<Jar> {
     }
 }
 
-<% if (use_dokka) { %>\
 tasks.withType<DokkaTask> {
     outputFormat = "html"
     outputDirectory = "\${buildDir.absolutePath}/javadoc"
     sourceDirs = files("src/main/kotlin")
 }
-<% } %>\

@@ -18,9 +18,8 @@ if (props.is_application) {
     props.application_main_class_name = ask("application main class: ", '', 'application_main_class_name')
 }
 
-println ''
-println '[Gradle plugin]'
-props.use_dokka = ask("use dokka? (yes) [yes/no] ", "yes") ==~ /(?i)y(es)?/
+// println ''
+// println '[Gradle plugin]'
 
 processTemplates 'README.md', props
 processTemplates 'build.gradle.kts', props
