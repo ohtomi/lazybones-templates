@@ -1,25 +1,13 @@
 import org.gradle.jvm.tasks.Jar
-//import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaTask
 
-
-buildscript {
-//    val dokka_version = "0.9.14"
-
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-//        classpath("org.jetbrains.dokka:dokka-gradle-plugin:\$dokka_version")
-    }
-}
 
 plugins {
 <% if (is_application) { %>\
     application
 <% } %>\
     kotlin("jvm") version "${kotlin_version}"
-//    id("org.jetbrains.dokka")
+    id("org.jetbrains.dokka") version "0.9.17"
 }
 
 
@@ -57,8 +45,8 @@ tasks.withType<Jar> {
     }
 }
 
-//tasks.withType<DokkaTask> {
-//    outputFormat = "html"
-//    outputDirectory = "\${buildDir.absolutePath}/javadoc"
-//    sourceDirs = files("src/main/kotlin")
-//}
+tasks.withType<DokkaTask> {
+    outputFormat = "html"
+    outputDirectory = "\${buildDir.absolutePath}/javadoc"
+    sourceDirs = files("src/main/kotlin")
+}
