@@ -24,7 +24,7 @@ buildscript {
 }
 
 apply {
-<% if (use_application) { %>\
+<% if (is_application) { %>\
     plugin("application")
 <% } %>\
     plugin("kotlin")
@@ -43,25 +43,26 @@ dependencies {
 }
 
 
-group = project.properties["lib_group"] as String
-version = project.properties["lib_version"] as String
+archivesBaseName = project.properties["artifact_name"] as String
+group = project.properties["artifact_group"] as String
+version = project.properties["artifact_version"] as String
 
-<% if (use_application) { %>\
+<% if (is_application) { %>\
+
 configure<ApplicationPluginConvention> {
-    applicationName = project.properties["lib_name"] as String
-    mainClassName = project.properties["lib_main_class"] as String
+    applicationName = project.properties["application_name"] as String
+    mainClassName = project.properties["application_main_class_name"] as String
 }
 <% } %>\
 
-tasks.withType<Jar> {
-    baseName = project.properties["lib_name"] as String
 
+tasks.withType<Jar> {
     manifest.apply {
-<% if (use_application) { %>\
-        attributes["Main-Class"] = project.properties["lib_main_class"]
+<% if (is_application) { %>\
+        attributes["Main-Class"] = project.properties["application_main_class_name"]
 <% } %>\
-        attributes["Implementation-Title"] = project.properties["lib_name"]
-        attributes["Implementation-Version"] = project.properties["lib_version"]
+        attributes["Implementation-Title"] = project.properties["artifact_name"]
+        attributes["Implementation-Version"] = project.properties["artifact_version"]
     }
 }
 
