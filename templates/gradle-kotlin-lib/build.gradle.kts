@@ -1,47 +1,46 @@
 import org.gradle.jvm.tasks.Jar
-import org.jetbrains.dokka.gradle.DokkaTask
+//import org.jetbrains.dokka.gradle.DokkaTask
 
 
 buildscript {
-    extra["kotlin_version"] = "${kotlin_version}"
-    extra["dokka_version"] = "0.9.14"
+//    val dokka_version = "0.9.14"
 
     repositories {
-        gradleScriptKotlin()
         jcenter()
     }
 
     dependencies {
-        classpath(kotlinModule("gradle-plugin"))
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:\${extra["dokka_version"]}")
+//        classpath("org.jetbrains.dokka:dokka-gradle-plugin:\$dokka_version")
     }
 }
 
-apply {
+plugins {
 <% if (is_application) { %>\
-    plugin("application")
+    application
 <% } %>\
-    plugin("kotlin")
-    plugin("org.jetbrains.dokka")
+    kotlin("jvm") version "${kotlin_version}"
+//    id("org.jetbrains.dokka")
 }
 
 
 repositories {
-    gradleScriptKotlin()
+    jcenter()
 }
 
 dependencies {
-    compile(kotlinModule("stdlib", extra["kotlin_version"] as String))
+    compile(kotlin("stdlib"))
 }
 
 
-archivesBaseName = project.properties["artifact_name"] as String
-group = project.properties["artifact_group"] as String
-version = project.properties["artifact_version"] as String
+base {
+    archivesBaseName = project.properties["artifact_name"] as String
+    group = project.properties["artifact_group"] as String
+    version = project.properties["artifact_version"] as String
+}
 
 <% if (is_application) { %>\
 
-configure<ApplicationPluginConvention> {
+application {
     applicationName = project.properties["application_name"] as String
     mainClassName = project.properties["application_main_class_name"] as String
 }
@@ -51,15 +50,15 @@ configure<ApplicationPluginConvention> {
 tasks.withType<Jar> {
     manifest.apply {
 <% if (is_application) { %>\
-        attributes["Main-Class"] = project.properties["application_main_class_name"]
+        attributes["Main-Class"] = project.properties["application_main_class_name"] as String
 <% } %>\
-        attributes["Implementation-Title"] = project.properties["artifact_name"]
-        attributes["Implementation-Version"] = project.properties["artifact_version"]
+        attributes["Implementation-Title"] = project.properties["artifact_name"] as String
+        attributes["Implementation-Version"] = project.properties["artifact_version"] as String
     }
 }
 
-tasks.withType<DokkaTask> {
-    outputFormat = "html"
-    outputDirectory = "\${buildDir.absolutePath}/javadoc"
-    sourceDirs = files("src/main/kotlin")
-}
+//tasks.withType<DokkaTask> {
+//    outputFormat = "html"
+//    outputDirectory = "\${buildDir.absolutePath}/javadoc"
+//    sourceDirs = files("src/main/kotlin")
+//}
