@@ -7,6 +7,7 @@ plugins {
 <% } %>\
     kotlin("jvm") version "${kotlin_version}"
     id("org.jetbrains.dokka") version "0.9.17"
+    id("io.gitlab.arturbosch.detekt") version "1.0.0.RC7-3"
 }
 
 
@@ -14,8 +15,11 @@ repositories {
     jcenter()
 }
 
+val ktlint by configurations.creating
+
 dependencies {
     compile(kotlin("stdlib"))
+    ktlint("com.github.shyiko:ktlint:0.24.0")
 }
 
 
@@ -51,8 +55,39 @@ tasks.withType<Jar> {
     }
 }
 
+// https://github.com/Kotlin/dokka
 tasks.withType<DokkaTask> {
     outputFormat = "html"
     outputDirectory = "\${buildDir.absolutePath}/javadoc"
     sourceDirs = files("src/main/kotlin")
+}
+
+// https://ktlint.github.io
+// https://github.com/shyiko/ktlint
+task<JavaExec>("ktlint") {
+    val ktlint by configurations
+
+    group = "verification"
+    description = "Check Kotlin code style."
+    isIgnoreExitValue = true
+    classpath = ktlint
+    main = "com.github.shyiko.ktlint.Main"
+    args(listOf(
+        "src/main/kotlin/**/*.kt",
+        "--reporter=plain",
+        "--reporter=checkstyle,output=${buildDir}/reports/ktlint/ktlintMain.xml"
+    ))
+}
+tasks.getByName("check").dependsOn("ktlint")
+
+
+// https://arturbosch.github.io/detekt
+// https://github.com/arturbosch/detekt
+// https://github.com/arturbosch/detekt/blob/RC7-3/docs/pages/gettingstarted/kotlindsl.md
+detekt {
+    version = "1.0.0.RC7-3"
+    profile("main", Action {
+        input = "src/main/kotlin"
+        filters = ".*/resources/.*,.*/build/.*"
+    })
 }
