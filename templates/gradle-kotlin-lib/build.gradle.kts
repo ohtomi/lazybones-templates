@@ -75,7 +75,7 @@ task<JavaExec>("ktlint") {
     args(listOf(
         "src/main/kotlin/**/*.kt",
         "--reporter=plain",
-        "--reporter=checkstyle,output=${buildDir}/reports/ktlint/ktlintMain.xml"
+        "--reporter=checkstyle,output=\${buildDir}/reports/ktlint/ktlintMain.xml"
     ))
 }
 tasks.getByName("check").dependsOn("ktlint")
