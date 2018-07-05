@@ -16,6 +16,8 @@ plugins {
     id 'jacoco'
     id 'com.github.ben-manes.versions' version '${versions_version}'
     id 'net.ossindex.audit' version '${audit_version}'
+    id 'com.jfrog.bintray' version '${bintray_version}'
+    id 'maven-publish'
 }
 
 
@@ -37,7 +39,7 @@ group = artifact_group
 version = artifact_version
 
 
-tasks.withType(JavaCompile){
+tasks.withType(JavaCompile) {
     sourceCompatibility = '${java_version}'
     targetCompatibility = '${java_version}'
     options.encoding = 'UTF-8'
@@ -54,6 +56,17 @@ jar {
         )
     }
 }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+javadoc.failOnError = false
 
 test {
     maxParallelForks = 1
@@ -107,4 +120,67 @@ dependencyUpdates {
 // https://github.com/OSSIndex/ossindex-gradle-plugin
 audit {
     failOnError = false
+}
+
+// https://github.com/bintray/gradle-bintray-plugin
+bintray {
+    user = bintray_username
+    key = bintray_api_key
+    publications = ['jcenterPublication']
+    dryRun = true
+    publish = true
+    override = false
+    pkg {
+        repo = 'generic'
+        name = artifact_name
+        userOrg = bintray_username
+        licenses = ['${artifact_license}']
+        vcsUrl = 'https://github.com/xxxxx/xxx-xxx-xxx.git' // TODO
+        version {
+            name = artifact_version
+            desc = artifact_version
+            released = new Date()
+            // attributes = []
+        }
+    }
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name '${artifact_license}'
+            url 'https://xxxxx.mit-license.org' // TODO
+            distribution 'repo'
+        }
+    }
+    developers {
+        developer {
+            id 'xxxxx' // TODO
+            name 'xxxxx xxxxx' // TODO
+            email 'xxxxx.xxxxx@gmail.com' // TODO
+        }
+    }
+    scm {
+       url 'https://github.com/xxxxx/xxx-xxx-xxx' // TODO
+    }
+}
+
+publishing {
+    publications {
+        jcenterPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId    artifact_group
+            artifactId artifact_name
+            version    artifact_version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', '${artifact_description}')
+                root.appendNode('name', artifact_name)
+                root.appendNode('url', 'https://github.com/xxxxx/xxx-xxx-xxx') // TODO
+                root.children().last() + pomConfig
+            }
+        }
+    }
 }

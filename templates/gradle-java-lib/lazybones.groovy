@@ -25,7 +25,8 @@ props.pmd_version = ask("PMD version: (6.5.0) ", '6.5.0')
 props.spotbugs_version = ask("SpotBugs version: (3.1.5) ", '3.1.5')
 props.jacoco_version = ask("JaCoCo version: (0.8.1) ", '0.8.1')
 props.versions_version = ask("com.github.ben-manes.versions version: (0.20.0) ", '0.20.0')
-props.audit_version = ask("net.ossindex.audit version: (3.0.0) ", '0.3.19-beta')
+props.audit_version = ask("net.ossindex.audit version: (0.3.19-beta) ", '0.3.19-beta')
+props.bintray_version = ask("com.jfrog.bintray version: (1.8.3) ", '1.8.3')
 
 processTemplates 'README.md', props
 processTemplates 'build.gradle', props
