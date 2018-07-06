@@ -135,7 +135,7 @@ bintray {
         name = artifact_name
         userOrg = bintray_username
         licenses = ['${artifact_license}']
-        vcsUrl = 'https://github.com/xxxxx/xxx-xxx-xxx.git' // TODO
+        vcsUrl = 'https://github.com/${repo_owner}/${repo_name}.git'
         version {
             name = artifact_version
             desc = artifact_version
@@ -149,7 +149,7 @@ def pomConfig = {
     licenses {
         license {
             name '${artifact_license}'
-            url 'https://xxxxx.mit-license.org' // TODO
+            url 'https://${repo_owner}.mit-license.org'
             distribution 'repo'
         }
     }
@@ -161,7 +161,7 @@ def pomConfig = {
         }
     }
     scm {
-       url 'https://github.com/xxxxx/xxx-xxx-xxx' // TODO
+       url 'https://github.com/${repo_owner}/${repo_name}'
     }
 }
 
@@ -178,7 +178,7 @@ publishing {
                 def root = asNode()
                 root.appendNode('description', '${artifact_description}')
                 root.appendNode('name', artifact_name)
-                root.appendNode('url', 'https://github.com/xxxxx/xxx-xxx-xxx') // TODO
+                root.appendNode('url', 'https://github.com/${repo_owner}/${repo_name}')
                 root.children().last() + pomConfig
             }
         }

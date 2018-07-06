@@ -11,6 +11,11 @@ props.artifact_description = ask("description: ", '')
 props.artifact_license = ask("license: (MIT) ", 'MIT')
 
 println ''
+println '[GitHub repository]'
+props.repo_owner = ask("owner: (${System.getenv('USER')}) ", System.getenv('USER'))
+props.repo_name = ask("name: (${projectDir.name}) ", projectDir.name)
+
+println ''
 println '[Java]'
 props.java_version = ask("version: (1.8) ", '1.8', 'java_version')
 props.is_application = ask("application? (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
