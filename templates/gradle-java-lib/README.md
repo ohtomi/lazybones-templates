@@ -2,7 +2,7 @@
 
 ## Description
 
-${artifact_description}
+TODO
 
 ## Usage
 

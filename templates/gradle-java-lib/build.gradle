@@ -158,9 +158,9 @@ def pomConfig = {
     }
     developers {
         developer {
-            id 'xxxxx' // TODO
-            name 'xxxxx xxxxx' // TODO
-            email 'xxxxx.xxxxx@gmail.com' // TODO
+            id 'TODO'
+            name 'TODO'
+            email 'TODO'
         }
     }
     scm {
@@ -179,7 +179,7 @@ publishing {
             version    artifact_version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', '${artifact_description}')
+                root.appendNode('description', 'TODO')
                 root.appendNode('name', artifact_name)
                 root.appendNode('url', 'https://github.com/${repo_owner}/${repo_name}')
                 root.children().last() + pomConfig
