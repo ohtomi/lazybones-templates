@@ -18,4 +18,4 @@ TODO
 
 ## License
 
-${artifact_license}
+[MIT](https://${repo_owner}.mit-license.org)

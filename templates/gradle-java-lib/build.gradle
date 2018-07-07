@@ -134,13 +134,16 @@ bintray {
         repo = 'generic'
         name = artifact_name
         userOrg = bintray_username
-        licenses = ['${artifact_license}']
+        licenses = ['MIT']
         vcsUrl = 'https://github.com/${repo_owner}/${repo_name}.git'
         version {
             name = artifact_version
             desc = artifact_version
             released = new Date()
             // attributes = []
+            // gpg {
+            //     sign = true
+            // }
         }
     }
 }
@@ -148,7 +151,7 @@ bintray {
 def pomConfig = {
     licenses {
         license {
-            name '${artifact_license}'
+            name 'MIT'
             url 'https://${repo_owner}.mit-license.org'
             distribution 'repo'
         }

@@ -8,7 +8,6 @@ props.artifact_name = ask("name: (${projectDir.name}) ", projectDir.name)
 props.artifact_group = ask("group: (org.example) ", 'org.example')
 props.artifact_version = ask("version: (0.1) ", '0.1')
 props.artifact_description = ask("description: ", '')
-props.artifact_license = ask("license: (MIT) ", 'MIT')
 
 println ''
 println '[GitHub repository]'
