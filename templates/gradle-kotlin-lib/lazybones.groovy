@@ -7,8 +7,11 @@ println '[Maven artifact]'
 props.artifact_name = ask("name: (${projectDir.name}) ", projectDir.name, 'artifact_name')
 props.artifact_group = ask("group: (org.example) ", 'org.example', 'artifact_group')
 props.artifact_version = ask("version: (0.1) ", '0.1', 'artifact_version')
-props.artifact_description = ask("description: ", '', 'artifact_description')
-props.artifact_license = ask("license: (MIT) ", 'MIT', 'artifact_license')
+
+println ''
+println '[GitHub repository]'
+props.repo_owner = ask("owner: (${System.getenv('USER')}) ", System.getenv('USER'))
+props.repo_name = ask("name: (${projectDir.name}) ", projectDir.name)
 
 println ''
 println '[Kotlin]'
