@@ -1,6 +1,7 @@
 import java.util.Date
 import java.text.SimpleDateFormat
 import org.jetbrains.dokka.gradle.DokkaTask
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 
 plugins {
@@ -10,6 +11,8 @@ plugins {
     kotlin("jvm") version "${kotlin_version}"
     id("org.jetbrains.dokka") version "${dokka_version}"
     id("io.gitlab.arturbosch.detekt") version "${detekt_version}"
+    id("com.github.ben-manes.versions") version "${versions_version}"
+    id("net.ossindex.audit") version "${audit_version}"
     id("com.jfrog.bintray") version "${bintray_version}"
     `maven-publish`
 }
@@ -36,7 +39,6 @@ base {
     group = artifact_group
     version = artifact_version
 }
-
 <% if (is_application) { %>\
 
 val application_name: String by project
@@ -96,7 +98,6 @@ task<JavaExec>("ktlint") {
 }
 tasks.getByName("check").dependsOn("ktlint")
 
-
 // https://arturbosch.github.io/detekt
 // https://github.com/arturbosch/detekt
 // https://github.com/arturbosch/detekt/blob/RC7-3/docs/pages/gettingstarted/kotlindsl.md
@@ -106,6 +107,16 @@ detekt {
         input = "src/main/kotlin"
         filters = ".*/resources/.*,.*/build/.*"
     })
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.withType<DependencyUpdatesTask> {
+    revision = "release"
+}
+
+// https://github.com/OSSIndex/ossindex-gradle-plugin
+audit {
+    failOnError = false
 }
 
 val bintray_username: String by project

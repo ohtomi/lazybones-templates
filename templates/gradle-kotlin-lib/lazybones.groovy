@@ -27,6 +27,8 @@ println '[Gradle plugin]'
 props.dokka_version = ask("dokka version: (0.9.17) ", '0.9.17')
 props.ktlint_version = ask("ktlint version: (0.24.0) ", '0.24.0')
 props.detekt_version = ask("io.gitlab.arturbosch.detekt version: (1.0.0.RC7-3) ", '1.0.0.RC7-3')
+props.versions_version = ask("com.github.ben-manes.versions version: (0.20.0) ", '0.20.0')
+props.audit_version = ask("net.ossindex.audit version: (0.3.19-beta) ", '0.3.19-beta')
 props.bintray_version = ask("com.jfrog.bintray version: (1.8.3) ", '1.8.3')
 
 processTemplates 'README.md', props
