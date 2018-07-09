@@ -17,13 +17,17 @@ println ''
 println '[Kotlin]'
 // see. https://youtrack.jetbrains.com/issue/KT-21303
 props.kotlin_version = ask("version: (1.2.30) ", '1.2.30', 'kotlin_version')
-props.is_application = ask("use application? (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
+props.is_application = ask("application? (no) [yes/no] ", "no") ==~ /(?i)y(es)?/
 if (props.is_application) {
     props.application_main_class_name = ask("application main class: ", '', 'application_main_class_name')
 }
 
-// println ''
-// println '[Gradle plugin]'
+println ''
+println '[Gradle plugin]'
+props.dokka_version = ask("dokka version: (0.9.17) ", '0.9.17')
+props.ktlint_version = ask("ktlint version: (0.24.0) ", '0.24.0')
+props.detekt_version = ask("io.gitlab.arturbosch.detekt version: (1.0.0.RC7-3) ", '1.0.0.RC7-3')
+props.bintray_version = ask("com.jfrog.bintray version: (1.8.3) ", '1.8.3')
 
 processTemplates 'README.md', props
 processTemplates 'build.gradle.kts', props
