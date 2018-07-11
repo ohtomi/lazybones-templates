@@ -28,21 +28,29 @@ repositories {
 dependencies {
 }
 
+
+archivesBaseName = artifact_name
+group = artifact_group
+version = artifact_version
 <% if (is_application) { %>\
 
 applicationName = application_name
 mainClassName = application_main_class_name
 <% } %>\
 
-archivesBaseName = artifact_name
-group = artifact_group
-version = artifact_version
-
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = '${java_version}'
     targetCompatibility = '${java_version}'
     options.encoding = 'UTF-8'
+}
+
+test {
+    maxParallelForks = 1
+    forkEvery = 100
+    minHeapSize = '128m'
+    maxHeapSize = '128m'
+    jvmArgs = ['-XX:+UseG1GC']
 }
 
 jar {
@@ -67,14 +75,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 javadoc.failOnError = false
-
-test {
-    maxParallelForks = 1
-    forkEvery = 100
-    minHeapSize = '128m'
-    maxHeapSize = '128m'
-    jvmArgs = ['-XX:+UseG1GC']
-}
 
 // https://docs.gradle.org/current/userguide/checkstyle_plugin.html
 // https://checkstyle.org
@@ -140,7 +140,7 @@ bintray {
             name = artifact_version
             desc = artifact_version
             released = new Date()
-            // attributes = []
+            // attributes = ['': '']
             // gpg {
             //     sign = true
             // }
@@ -158,9 +158,9 @@ def pomConfig = {
     }
     developers {
         developer {
-            id 'TODO'
-            name 'TODO'
-            email 'TODO'
+            id developer_id
+            name developer_name
+            email developer_email
         }
     }
     scm {
