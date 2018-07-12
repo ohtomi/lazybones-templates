@@ -51,6 +51,14 @@ application {
 <% } %>\
 
 
+tasks.withType<Test> {
+    maxParallelForks = 1
+    setForkEvery(100)
+    minHeapSize = "128m"
+    maxHeapSize = "128m"
+    jvmArgs = listOf("-XX:+UseG1GC")
+}
+
 tasks.withType<Jar> {
     manifest.apply {
 <% if (is_application) { %>\
@@ -68,21 +76,20 @@ val sourcesJar by tasks.creating(Jar::class) {
 
 val javadocJar by tasks.creating(Jar::class) {
     val dokka by tasks
+
     classifier = "javadoc"
-//    from(dokka.outputDirectory)
-    from("\${buildDir.absolutePath}/javadoc")
+    from("\${buildDir}/docs/javadoc")
 }
 
 // https://github.com/Kotlin/dokka
 tasks.withType<DokkaTask> {
     outputFormat = "html"
-    outputDirectory = "\${buildDir.absolutePath}/javadoc"
-    sourceDirs = files("src/main/kotlin")
+    outputDirectory = "\${buildDir}/docs/avadoc"
 }
 
 // https://ktlint.github.io
 // https://github.com/shyiko/ktlint
-task<JavaExec>("ktlint") {
+val ktlint by tasks.creating(JavaExec::class) {
     val ktlint by configurations
 
     group = "verification"
@@ -90,11 +97,11 @@ task<JavaExec>("ktlint") {
     isIgnoreExitValue = true
     classpath = ktlint
     main = "com.github.shyiko.ktlint.Main"
-    args(listOf(
+    args = listOf(
         "src/main/kotlin/**/*.kt",
         "--reporter=plain",
         "--reporter=checkstyle,output=\${buildDir}/reports/ktlint/ktlintMain.xml"
-    ))
+    )
 }
 tasks.getByName("check").dependsOn("ktlint")
 
