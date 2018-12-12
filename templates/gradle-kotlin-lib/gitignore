@@ -2,3 +2,5 @@
 .lazybones
 .idea
 build
+
+*.iml

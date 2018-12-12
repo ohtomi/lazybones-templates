@@ -1,5 +1,8 @@
 # ${artifact_name}
 
+[![License](https://img.shields.io/github/license/${repo_owner}/${repo_name}.svg)](https://github.com/${repo_owner}/${repo_name})
+[![Build Status](https://travis-ci.org/${repo_owner}/${repo_name}.svg?branch=master)](https://travis-ci.org/${repo_owner}/${repo_name})
+
 ## Description
 
 TODO
