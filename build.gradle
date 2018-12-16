@@ -11,6 +11,7 @@ buildscript {
 }
 
 apply plugin: "uk.co.cacoethes.lazybones-templates"
+apply plugin: VerifyTemplatePlugin
 
 lazybones {
     repositoryName = "ohtomi/lazybones-templates"
