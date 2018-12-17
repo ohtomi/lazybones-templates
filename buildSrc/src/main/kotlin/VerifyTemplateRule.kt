@@ -4,7 +4,9 @@ import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByName
 import uk.co.cacoethes.gradle.lazybones.LazybonesConventions
+import uk.co.cacoethes.gradle.lazybones.TemplateConvention
 import uk.co.cacoethes.gradle.util.NameConverter
+import java.io.File
 
 class VerifyTemplateRule(
         val project: Project,
@@ -12,25 +14,34 @@ class VerifyTemplateRule(
         val lazybonesVerifier: VerifyTemplateExtension
 ) : Rule {
 
-    val taskNameMatcher = """verifyTemplate([A-Z\-]\S+)""".toRegex()
+    private val taskNameMatcher = """verifyTemplate([A-Z\-]\S+)""".toRegex()
 
     override fun apply(taskName: String) {
         val result = taskNameMatcher.find(taskName)
         if (result != null) {
             val camelCaseTmplName = result.groupValues[1]
             val hyphenatedTmplName = NameConverter.camelCaseToHyphenated(camelCaseTmplName)
-            val installTask = project.tasks.getByName("installTemplate$camelCaseTmplName", Copy::class) ?: return
+            val templateConvention = findTemplateConvention(hyphenatedTmplName)
+            val templateDir = findTemplateDir(hyphenatedTmplName) ?: return
+            val versionText = templateConvention?.version ?: project.file("$templateDir/VERSION").readText().trim()
+            val installTask = findInstallTask(camelCaseTmplName) ?: return
             val extensionItems = lazybonesVerifier.collection.filter { it.name == hyphenatedTmplName }
             project.tasks.create(taskName, VerifyTemplateTask::class).apply {
                 templateName = hyphenatedTmplName
-                templateVersion = "1.5.1" // TODO read templates/$templateName/VERSION file
-                destDir = "${project.buildDir}/lazybones-projects/$hyphenatedTmplName"
+                templateVersion = versionText
+                destBaseDir = "${project.buildDir}/lazybones-projects/$hyphenatedTmplName"
                 testCases = extensionItems
 
                 dependsOn(installTask)
             }
         }
     }
+
+    private fun findTemplateConvention(hyphenatedTmplName: String): TemplateConvention? = lazybones.templateConventions.find { it.name == hyphenatedTmplName }
+
+    private fun findTemplateDir(hyphenatedTmplName: String): File? = lazybones.templateDirs.files.find { it.name == hyphenatedTmplName }
+
+    private fun findInstallTask(camelCaseTmplName: String): Copy? = project.tasks.getByName("installTemplate$camelCaseTmplName", Copy::class)
 
     override fun getDescription(): String = "verifyTemplate<TpmlName> - Verifies the template in the directory matching the task name"
 

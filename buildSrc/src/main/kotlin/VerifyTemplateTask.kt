@@ -1,6 +1,8 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskExecutionException
+import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
@@ -13,7 +15,7 @@ open class VerifyTemplateTask : DefaultTask() {
     var templateVersion: String = ""
 
     @Input
-    var destDir: String = "."
+    var destBaseDir: String = "."
 
     @Input
     var testCases: List<VerifyTemplateConventionItem> = emptyList()
@@ -21,20 +23,29 @@ open class VerifyTemplateTask : DefaultTask() {
     @TaskAction
     fun verify() {
         if (testCases.isEmpty()) {
-            logger.error("No test cases for $templateName $templateVersion")
-            return
+            throw TaskExecutionException(this, IllegalStateException("No test cases for $templateName $templateVersion"))
         }
 
+        // see http://oswald.hatenablog.com/entry/20100426/1272240082
         testCases.forEachIndexed { index: Int, item: VerifyTemplateConventionItem ->
-            // TODO clean destDir before running lazybones
-            val process = ProcessBuilder()
-                    .command("lazybones", "create", templateName, templateVersion, "$destDir/$index", *item.params)
-                    .start()
-            process.waitFor(3, TimeUnit.SECONDS)
-            if (process.isAlive) {
-                process.destroy()
+            // TODO clean destBaseDir before running lazybones
+            val destDir = "$destBaseDir/$index"
+            val commands = arrayOf("lazybones", "create", templateName, templateVersion, destDir, *item.params)
+            ProcessBuilder(*commands).run {
+                try {
+                    val process = start()
+                    process.waitFor(3, TimeUnit.SECONDS)
+                    if (process.isAlive) {
+                        process.destroy()
+                    }
+                    println(process.errorStream.readAllBytes().toString(StandardCharsets.UTF_8))
+                    // TODO close all streams of process
+                } catch (e: IOException) {
+
+                } catch (e: InterruptedException) {
+
+                }
             }
-            println(process.errorStream.readAllBytes().toString(StandardCharsets.UTF_8))
         }
     }
 }
