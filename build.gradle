@@ -32,3 +32,26 @@ lazybones {
 
     publish = true
 }
+
+lazybonesVerifier {
+    template {
+        name = "gradle-java-lib"
+        params = [
+                "-Partifact_name=FooBarBaz",
+                "-Partifact_group=com.exmaple",
+                "-Prepo_owner=example",
+                "-Prepo_name=foobarbaz",
+                "-Pis_app=yes"
+        ]
+    }
+    template {
+        name = "gradle-java-lib"
+        params = [
+                "-Partifact_name=FooBarBaz",
+                "-Partifact_group=com.exmaple",
+                "-Prepo_owner=example",
+                "-Prepo_name=foobarbaz",
+                "-Pis_app=no"
+        ]
+    }
+}

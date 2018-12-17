@@ -12,10 +12,29 @@ open class VerifyTemplateTask : DefaultTask() {
     @Input
     var templateVersion: String = ""
 
+    @Input
+    var destDir: String = "."
+
+    @Input
+    var testCases: List<VerifyTemplateConventionItem> = emptyList()
+
     @TaskAction
     fun verify() {
-        val process = ProcessBuilder().command("lazybones", "list", "--cached").start()
-        process.waitFor(5, TimeUnit.SECONDS)
-        println(process.inputStream.readAllBytes().toString(StandardCharsets.UTF_8))
+        if (testCases.isEmpty()) {
+            logger.error("No test cases for $templateName $templateVersion")
+            return
+        }
+
+        testCases.forEachIndexed { index: Int, item: VerifyTemplateConventionItem ->
+            // TODO clean destDir before running lazybones
+            val process = ProcessBuilder()
+                    .command("lazybones", "create", templateName, templateVersion, "$destDir/$index", *item.params)
+                    .start()
+            process.waitFor(3, TimeUnit.SECONDS)
+            if (process.isAlive) {
+                process.destroy()
+            }
+            println(process.errorStream.readAllBytes().toString(StandardCharsets.UTF_8))
+        }
     }
 }

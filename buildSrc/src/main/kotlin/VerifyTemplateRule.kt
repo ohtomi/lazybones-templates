@@ -4,8 +4,13 @@ import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByName
 import uk.co.cacoethes.gradle.lazybones.LazybonesConventions
+import uk.co.cacoethes.gradle.util.NameConverter
 
-class VerifyTemplateRule(val project: Project, val extension: LazybonesConventions) : Rule {
+class VerifyTemplateRule(
+        val project: Project,
+        val lazybones: LazybonesConventions,
+        val lazybonesVerifier: VerifyTemplateExtension
+) : Rule {
 
     val taskNameMatcher = """verifyTemplate([A-Z\-]\S+)""".toRegex()
 
@@ -13,12 +18,16 @@ class VerifyTemplateRule(val project: Project, val extension: LazybonesConventio
         val result = taskNameMatcher.find(taskName)
         if (result != null) {
             val camelCaseTmplName = result.groupValues[1]
-            val pkgTask = project.tasks.getByName("installTemplate$camelCaseTmplName", Copy::class) ?: return
+            val hyphenatedTmplName = NameConverter.camelCaseToHyphenated(camelCaseTmplName)
+            val installTask = project.tasks.getByName("installTemplate$camelCaseTmplName", Copy::class) ?: return
+            val extensionItems = lazybonesVerifier.collection.filter { it.name == hyphenatedTmplName }
             project.tasks.create(taskName, VerifyTemplateTask::class).apply {
-                templateName = TODO("camel case template name to kebab case")
-                templateVersion = TODO("read VERSION file")
+                templateName = hyphenatedTmplName
+                templateVersion = "1.5.1" // TODO read templates/$templateName/VERSION file
+                destDir = "${project.buildDir}/lazybones-projects/$hyphenatedTmplName"
+                testCases = extensionItems
 
-                dependsOn(pkgTask)
+                dependsOn(installTask)
             }
         }
     }
