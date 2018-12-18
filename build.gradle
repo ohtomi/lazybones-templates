@@ -43,6 +43,10 @@ lazybonesVerifier {
                 "-Prepo_name=foobarbaz",
                 "-Pis_app=yes"
         ]
+        step {
+            name = "build"
+            commands = ["./gradlew", "--no-daemon", "clean", "build", "syncLibs", "bintrayUpload"]
+        }
     }
     template {
         name = "gradle-java-lib"
@@ -53,5 +57,9 @@ lazybonesVerifier {
                 "-Prepo_name=foobarbaz",
                 "-Pis_app=no"
         ]
+        step {
+            name = "build"
+            commands = ["./gradlew", "--no-daemon", "clean", "build", "syncLibs", "bintrayUpload"]
+        }
     }
 }

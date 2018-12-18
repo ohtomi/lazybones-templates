@@ -25,7 +25,7 @@ class VerifyTemplateRule(
             val templateDir = findTemplateDir(hyphenatedTmplName) ?: return
             val versionText = templateConvention?.version ?: project.file("$templateDir/VERSION").readText().trim()
             val installTask = findInstallTask(camelCaseTmplName) ?: return
-            val extensionItems = lazybonesVerifier.collection.filter { it.name == hyphenatedTmplName }
+            val extensionItems = lazybonesVerifier.templates.filter { it.name != null }.filter { it.name == hyphenatedTmplName }
             project.tasks.create(taskName, VerifyTemplateTask::class).apply {
                 templateName = hyphenatedTmplName
                 templateVersion = versionText

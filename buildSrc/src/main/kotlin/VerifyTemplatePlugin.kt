@@ -8,7 +8,7 @@ class VerifyTemplatePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         val lazybones = project.extensions.getByType(LazybonesConventions::class)
-        val lazybonesVerifier = project.extensions.create("lazybonesVerifier", VerifyTemplateExtension::class, project)
+        val lazybonesVerifier = project.extensions.create<VerifyTemplateExtension>("lazybonesVerifier", project.objects)
         project.tasks.addRule(VerifyTemplateRule(project, lazybones, lazybonesVerifier))
     }
 }

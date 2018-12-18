@@ -37,18 +37,19 @@ open class VerifyTemplateTask : DefaultTask() {
                 val createCommands = arrayOf("lazybones", "create", templateName, templateVersion, destDir, *item.params)
                 val createReturnCode = runExternalProcess(createCommands, project.rootDir, 3, TimeUnit.SECONDS)
                 if (createReturnCode != 0) {
-                    println("\n$SCREAM_EMOJI  Failed to generate a new project.")
+                    println("\n$SCREAM_EMOJI  [create] Failed to generate a new project.")
                     return@forEachIndexed
                 }
-                println("$THUMBS_UP_EMOJI  A new project was generated in $destDir")
+                println("$THUMBS_UP_EMOJI  [create] A new project was generated in $destDir")
 
-                val buildCommands = arrayOf("./gradlew", "clean", "build", "syncLibs", "bintrayUpload")
+                val buildStep = item.steps.find { it.name == "build" } ?: return
+                val buildCommands = buildStep.commands
                 val buildReturnCode = runExternalProcess(buildCommands, project.file(destDir), 30, TimeUnit.SECONDS)
                 if (buildReturnCode != 0) {
-                    println("$SCREAM_EMOJI  Failed to build the project.")
+                    println("$SCREAM_EMOJI  [${buildStep.name}] Failed to build the project.")
                     return@forEachIndexed
                 }
-                println("$THUMBS_UP_EMOJI  The project was completely built.")
+                println("$THUMBS_UP_EMOJI  [${buildStep.name}] The project was completely built.")
 
                 success++
             } catch (e: IOException) {
