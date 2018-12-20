@@ -15,9 +15,6 @@ open class VerifyTemplateTask : DefaultTask() {
     var templateVersion: String = ""
 
     @Input
-    var destBaseDir: String = "."
-
-    @Input
     var testCases: List<VerifyTemplateConventionItem> = emptyList()
 
     @TaskAction
@@ -26,31 +23,26 @@ open class VerifyTemplateTask : DefaultTask() {
             throw TaskExecutionException(this, IllegalStateException("No test cases for $templateName $templateVersion"))
         }
 
+        println("$LABEL_EMOJI  version: $templateVersion")
         var success = 0
+
         testCases.forEachIndexed { index: Int, item: VerifyTemplateConventionItem ->
             println("\n${index + 1} of ${testCases.size} $WALKING_EMOJI ...")
 
             // TODO clean destBaseDir before running lazybones
-            val destDir = "$destBaseDir/$index"
-
             try {
-                val createCommands = arrayOf("lazybones", "create", templateName, templateVersion, destDir, *item.params)
-                val createReturnCode = runExternalProcess(createCommands, project.rootDir, 3, TimeUnit.SECONDS)
-                if (createReturnCode != 0) {
-                    println("\n$SCREAM_EMOJI  [create] Failed to generate a new project.")
-                    return@forEachIndexed
+                item.steps.forEach {
+                    val commands = it.commands(templateName, templateVersion, index, item, project)
+                    val directory = it.directory(templateName, templateVersion, index, item, project)
+                    val timeout = it.timeout(templateName, templateVersion, index, item, project)
+                    val returnCode = runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
+                    if (returnCode != 0) {
+                        println("$SCREAM_EMOJI  [${it.name}] Failed. Something wrong.")
+                        return@forEachIndexed
+                    }
+                    println("$THUMBS_UP_EMOJI  [${it.name}] Done.")
                 }
-                println("$THUMBS_UP_EMOJI  [create] A new project was generated in $destDir")
-
-                val buildStep = item.steps.find { it.name == "build" } ?: return
-                val buildCommands = buildStep.commands
-                val buildReturnCode = runExternalProcess(buildCommands, project.file(destDir), 30, TimeUnit.SECONDS)
-                if (buildReturnCode != 0) {
-                    println("$SCREAM_EMOJI  [${buildStep.name}] Failed to build the project.")
-                    return@forEachIndexed
-                }
-                println("$THUMBS_UP_EMOJI  [${buildStep.name}] The project was completely built.")
-
+                println("$CHEQUERED_FLAG_EMOJI  Finished.")
                 success++
             } catch (e: IOException) {
                 println("\n$SCREAM_EMOJI  Exception: ${e.message}")
@@ -81,8 +73,12 @@ open class VerifyTemplateTask : DefaultTask() {
     }
 }
 
+val LABEL_EMOJI = String(Character.toChars(0x1F3F7))
+
 val WALKING_EMOJI = String(Character.toChars(0x1F6B6))
 
 val SCREAM_EMOJI = String(Character.toChars(0x1F631))
+
+val CHEQUERED_FLAG_EMOJI = String(Character.toChars(0x1F3C1))
 
 val THUMBS_UP_EMOJI = String(Character.toChars(0x1F44D))

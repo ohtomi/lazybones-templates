@@ -25,11 +25,10 @@ class VerifyTemplateRule(
             val templateDir = findTemplateDir(hyphenatedTmplName) ?: return
             val versionText = templateConvention?.version ?: project.file("$templateDir/VERSION").readText().trim()
             val installTask = findInstallTask(camelCaseTmplName) ?: return
-            val extensionItems = lazybonesVerifier.templates.filter { it.name != null }.filter { it.name == hyphenatedTmplName }
+            val extensionItems = lazybonesVerifier.templates.filter { it.name == hyphenatedTmplName }
             project.tasks.create(taskName, VerifyTemplateTask::class).apply {
                 templateName = hyphenatedTmplName
                 templateVersion = versionText
-                destBaseDir = "${project.buildDir}/lazybones-projects/$hyphenatedTmplName"
                 testCases = extensionItems
 
                 dependsOn(installTask)
@@ -37,13 +36,17 @@ class VerifyTemplateRule(
         }
     }
 
-    private fun findTemplateConvention(hyphenatedTmplName: String): TemplateConvention? = lazybones.templateConventions.find { it.name == hyphenatedTmplName }
+    private fun findTemplateConvention(hyphenatedTmplName: String): TemplateConvention? =
+            lazybones.templateConventions.find { it.name == hyphenatedTmplName }
 
-    private fun findTemplateDir(hyphenatedTmplName: String): File? = lazybones.templateDirs.files.find { it.name == hyphenatedTmplName }
+    private fun findTemplateDir(hyphenatedTmplName: String): File? =
+            lazybones.templateDirs.files.find { it.name == hyphenatedTmplName }
 
-    private fun findInstallTask(camelCaseTmplName: String): Copy? = project.tasks.getByName("installTemplate$camelCaseTmplName", Copy::class)
+    private fun findInstallTask(camelCaseTmplName: String): Copy? =
+            project.tasks.getByName("installTemplate$camelCaseTmplName", Copy::class)
 
-    override fun getDescription(): String = "verifyTemplate<TpmlName> - Verifies the template in the directory matching the task name"
+    override fun getDescription(): String =
+            "verifyTemplate<TpmlName> - Verifies the template in the directory matching the task name"
 
     override fun toString(): String = "Rule: $description"
 }

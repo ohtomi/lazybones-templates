@@ -36,30 +36,24 @@ lazybones {
 lazybonesVerifier {
     template {
         name = "gradle-java-lib"
-        params = [
+        gradleGenerate(
                 "-Partifact_name=FooBarBaz",
                 "-Partifact_group=com.exmaple",
                 "-Prepo_owner=example",
                 "-Prepo_name=foobarbaz",
                 "-Pis_app=yes"
-        ]
-        step {
-            name = "build"
-            commands = ["./gradlew", "--no-daemon", "clean", "build", "syncLibs", "bintrayUpload"]
-        }
+        )
+        gradleBuild("clean", "build", "syncLibs", "bintrayUpload")
     }
     template {
         name = "gradle-java-lib"
-        params = [
+        gradleGenerate(
                 "-Partifact_name=FooBarBaz",
                 "-Partifact_group=com.exmaple",
                 "-Prepo_owner=example",
                 "-Prepo_name=foobarbaz",
                 "-Pis_app=no"
-        ]
-        step {
-            name = "build"
-            commands = ["./gradlew", "--no-daemon", "clean", "build", "syncLibs", "bintrayUpload"]
-        }
+        )
+        gradleBuild("clean", "build", "syncLibs", "bintrayUpload")
     }
 }
