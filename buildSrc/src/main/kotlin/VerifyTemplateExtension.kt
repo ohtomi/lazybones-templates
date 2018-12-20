@@ -67,31 +67,13 @@ open class VerifyTemplateConventionStep(var name: String) {
 
     var args: Array<String> = emptyArray()
 
-    open fun commands(
-            templateName: String,
-            templateVersion: String,
-            index: Int,
-            item: VerifyTemplateConventionItem,
-            project: Project
-    ) =
+    open fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
             args
 
-    open fun directory(
-            templateName: String,
-            templateVersion: String,
-            index: Int,
-            item: VerifyTemplateConventionItem,
-            project: Project
-    ) =
+    open fun directory(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
             project.rootDir
 
-    open fun timeout(
-            templateName: String,
-            templateVersion: String,
-            index: Int,
-            item: VerifyTemplateConventionItem,
-            project: Project
-    ) =
+    open fun timeout(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
             5L
 
     companion object {
@@ -104,13 +86,7 @@ open class VerifyTemplateConventionGenerateStep : VerifyTemplateConventionStep("
 
     var params: Array<String> = emptyArray()
 
-    override fun commands(
-            templateName: String,
-            templateVersion: String,
-            index: Int,
-            item: VerifyTemplateConventionItem,
-            project: Project
-    ): Array<String> {
+    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
         val destDir = project.workDir(templateName, index).absolutePath
         return arrayOf("lazybones", "create", templateName, templateVersion, destDir, *params)
     }
@@ -125,32 +101,15 @@ open class VerifyTemplateConventionBuildStep : VerifyTemplateConventionStep("bui
 
     var tasks: Array<String> = emptyArray()
 
-    override fun commands(
-            templateName: String,
-            templateVersion: String,
-            index: Int,
-            item: VerifyTemplateConventionItem,
-            project: Project
-    ): Array<String> {
+    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
         return arrayOf("./gradlew", "--no-daemon", *tasks)
     }
 
-    override fun directory(
-            templateName: String,
-            templateVersion: String,
-            index: Int,
-            item: VerifyTemplateConventionItem,
-            project: Project
-    ): File =
+    override fun directory(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): File =
             project.workDir(templateName, index)
 
-    override fun timeout(
-            templateName: String,
-            templateVersion: String,
-            index: Int,
-            item: VerifyTemplateConventionItem,
-            project: Project
-    ) = 30L
+    override fun timeout(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
+            30L
 
     companion object {
         fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionBuildStep =
@@ -160,4 +119,3 @@ open class VerifyTemplateConventionBuildStep : VerifyTemplateConventionStep("bui
 
 fun Project.workDir(templateName: String, index: Int) =
         file("$buildDir/lazybones-projects/$templateName/$index")
-
