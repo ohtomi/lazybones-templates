@@ -94,15 +94,6 @@ open class VerifyTemplateConventionStep(var name: String) {
     ) =
             5L
 
-    fun rootDir(
-            templateName: String,
-            @Suppress("UNUSED_PARAMETER") templateVersion: String,
-            index: Int,
-            @Suppress("UNUSED_PARAMETER") item: VerifyTemplateConventionItem,
-            project: Project
-    ) =
-            project.file("${project.buildDir}/lazybones-projects/$templateName/$index")
-
     companion object {
         fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionStep =
                 objectFactory.newInstance("step")
@@ -120,7 +111,7 @@ open class VerifyTemplateConventionGenerateStep : VerifyTemplateConventionStep("
             item: VerifyTemplateConventionItem,
             project: Project
     ): Array<String> {
-        val destDir = rootDir(templateName, templateVersion, index, item, project).absolutePath
+        val destDir = project.workDir(templateName, index).absolutePath
         return arrayOf("lazybones", "create", templateName, templateVersion, destDir, *params)
     }
 
@@ -151,7 +142,7 @@ open class VerifyTemplateConventionBuildStep : VerifyTemplateConventionStep("bui
             item: VerifyTemplateConventionItem,
             project: Project
     ): File =
-            rootDir(templateName, templateVersion, index, item, project)
+            project.workDir(templateName, index)
 
     override fun timeout(
             templateName: String,
@@ -166,3 +157,7 @@ open class VerifyTemplateConventionBuildStep : VerifyTemplateConventionStep("bui
                 objectFactory.newInstance()
     }
 }
+
+fun Project.workDir(templateName: String, index: Int) =
+        file("$buildDir/lazybones-projects/$templateName/$index")
+

@@ -29,8 +29,10 @@ open class VerifyTemplateTask : DefaultTask() {
         testCases.forEachIndexed { index: Int, item: VerifyTemplateConventionItem ->
             println("\n${index + 1} of ${testCases.size} $WALKING_EMOJI ...")
 
-            // TODO clean destBaseDir before running lazybones
             try {
+                val workDir = project.workDir(templateName, index)
+                workDir.deleteRecursively()
+
                 item.steps.forEach {
                     val commands = it.commands(templateName, templateVersion, index, item, project)
                     val directory = it.directory(templateName, templateVersion, index, item, project)
