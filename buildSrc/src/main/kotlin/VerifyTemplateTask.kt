@@ -47,10 +47,10 @@ open class VerifyTemplateTask : DefaultTask() {
                 println("$CHEQUERED_FLAG_EMOJI  Finished.")
                 success++
             } catch (e: IOException) {
-                println("\n$SCREAM_EMOJI  Exception: ${e.message}")
+                println("$SCREAM_EMOJI  Exception: ${e.message}")
                 return@forEachIndexed
             } catch (e: InterruptedException) {
-                println("\n$SCREAM_EMOJI  Exception: ${e.message}")
+                println("$SCREAM_EMOJI  Exception: ${e.message}")
                 return@forEachIndexed
             }
         }
