@@ -39,7 +39,7 @@ open class VerifyTemplateTask : DefaultTask() {
                     val timeout = it.timeout(templateName, templateVersion, index, item, project)
                     val returnCode = runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
                     if (returnCode != 0) {
-                        println("$SCREAM_EMOJI  [${it.name}] Failed. Something wrong.")
+                        println("$SCREAM_EMOJI  [${it.name}] Failed. Something wrong. rc: $returnCode")
                         return@forEachIndexed
                     }
                     println("$THUMBS_UP_EMOJI  [${it.name}] Done.")
