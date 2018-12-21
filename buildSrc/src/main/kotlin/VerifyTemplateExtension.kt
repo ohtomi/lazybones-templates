@@ -57,6 +57,20 @@ open class VerifyTemplateConventionItem @javax.inject.Inject constructor(var nam
         }
     }
 
+    fun existsFiles(files: Array<String>) {
+        VerifyTemplateConventionExistsFilesStep.newInstance(objectFactory).also {
+            it.files = files
+            steps.add(it)
+        }
+    }
+
+    fun notExistsFiles(files: Array<String>) {
+        VerifyTemplateConventionNotExistsFilesStep.newInstance(objectFactory).also {
+            it.files = files
+            steps.add(it)
+        }
+    }
+
     companion object {
         fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionItem =
                 objectFactory.newInstance("", objectFactory)
@@ -113,6 +127,40 @@ open class VerifyTemplateConventionBuildStep : VerifyTemplateConventionStep("bui
 
     companion object {
         fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionBuildStep =
+                objectFactory.newInstance()
+    }
+}
+
+abstract class VerifyTemplateConventionCheckStep(val description: String) : VerifyTemplateConventionStep("check:$description") {
+
+    override fun directory(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): File =
+            project.workDir(templateName, index)
+}
+
+open class VerifyTemplateConventionExistsFilesStep : VerifyTemplateConventionCheckStep("exists") {
+
+    var files: Array<String> = emptyArray()
+
+    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
+        return arrayOf("/bin/sh", "-c", files.map { """ test -a "$it" """ }.joinToString(" && "))
+    }
+
+    companion object {
+        fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionExistsFilesStep =
+                objectFactory.newInstance()
+    }
+}
+
+open class VerifyTemplateConventionNotExistsFilesStep : VerifyTemplateConventionCheckStep("not exists") {
+
+    var files: Array<String> = emptyArray()
+
+    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
+        return arrayOf("/bin/sh", "-c", files.map { """ ! test -a "$it" """ }.joinToString(" && "))
+    }
+
+    companion object {
+        fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionNotExistsFilesStep =
                 objectFactory.newInstance()
     }
 }
