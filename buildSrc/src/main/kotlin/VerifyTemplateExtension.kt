@@ -77,7 +77,7 @@ open class VerifyTemplateConventionItem @javax.inject.Inject constructor(var nam
     }
 }
 
-open class VerifyTemplateConventionStep(var name: String) {
+open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var name: String) {
 
     var args: Array<String> = emptyArray()
 
