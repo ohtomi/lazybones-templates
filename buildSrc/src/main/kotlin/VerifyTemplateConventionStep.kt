@@ -2,6 +2,8 @@ import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.kotlin.dsl.newInstance
 import java.io.File
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var name: String) {
 
@@ -15,6 +17,28 @@ open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var nam
 
     open fun timeout(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
             5L
+
+    @Throws(IOException::class, InterruptedException::class)
+    open fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Int {
+        val commands = commands(templateName, templateVersion, index, item, project)
+        val directory = directory(templateName, templateVersion, index, item, project)
+        val timeout = timeout(templateName, templateVersion, index, item, project)
+        return runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
+    }
+
+    @Throws(IOException::class, InterruptedException::class)
+    fun runExternalProcess(commands: Array<String>, directory: File, timeout: Long, unit: TimeUnit): Int = ProcessBuilder().run {
+        command(*commands)
+        directory(directory)
+        start().run {
+            waitFor(timeout, unit)
+            if (isAlive) {
+                destroyForcibly()
+                waitFor(1, TimeUnit.SECONDS)
+            }
+            exitValue()
+        }
+    }
 
     companion object {
         fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionStep =

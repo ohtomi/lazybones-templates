@@ -2,9 +2,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
-import java.io.File
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 open class VerifyTemplateTask : DefaultTask() {
 
@@ -34,10 +32,7 @@ open class VerifyTemplateTask : DefaultTask() {
                 workDir.deleteRecursively()
 
                 item.steps.forEach {
-                    val commands = it.commands(templateName, templateVersion, index, item, project)
-                    val directory = it.directory(templateName, templateVersion, index, item, project)
-                    val timeout = it.timeout(templateName, templateVersion, index, item, project)
-                    val returnCode = runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
+                    val returnCode = it.execute(templateName, templateVersion, index, item, project)
                     if (returnCode != 0) {
                         println("$SCREAM_EMOJI  [${it.name}] Failed. Something wrong. rc: $returnCode")
                         return@forEachIndexed
@@ -57,20 +52,6 @@ open class VerifyTemplateTask : DefaultTask() {
 
         if (success < testCases.size) {
             throw TaskExecutionException(this, IllegalStateException("Template $templateName:$templateVersion has some errors."))
-        }
-    }
-
-    @Throws(IOException::class, InterruptedException::class)
-    fun runExternalProcess(commands: Array<String>, directory: File, timeout: Long, unit: TimeUnit): Int = ProcessBuilder().run {
-        command(*commands)
-        directory(directory)
-        start().run {
-            waitFor(timeout, unit)
-            if (isAlive) {
-                destroyForcibly()
-                waitFor(1, TimeUnit.SECONDS)
-            }
-            exitValue()
         }
     }
 }
