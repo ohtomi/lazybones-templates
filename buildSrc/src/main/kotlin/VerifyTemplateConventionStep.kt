@@ -3,6 +3,8 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.kotlin.dsl.newInstance
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
 open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var name: String) {
@@ -85,9 +87,12 @@ open class VerifyTemplateConventionExistsFilesStep : VerifyTemplateConventionSte
     var files: Array<String> = emptyArray()
 
     override fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
-        val commands = arrayOf("/bin/sh", "-c", files.map { """ test -a "$it" """ }.joinToString(" && "))
-        val directory = project.workDir(templateName, index)
-        return runExternalProcess(commands, directory, 5, TimeUnit.SECONDS)
+        val errors = files.map { Paths.get(project.workDir(templateName, index).absolutePath, it) }.filter { !Files.exists(it) }
+        if (errors.isEmpty()) {
+            return StepResult(true, "All files exists.")
+        } else {
+            return StepResult(false, "Not found. files: ${errors.joinToString { "${it.fileName}" }}")
+        }
     }
 
     companion object {
@@ -101,9 +106,12 @@ open class VerifyTemplateConventionNotExistsFilesStep : VerifyTemplateConvention
     var files: Array<String> = emptyArray()
 
     override fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
-        val commands = arrayOf("/bin/sh", "-c", files.map { """ ! test -a "$it" """ }.joinToString(" && "))
-        val directory = project.workDir(templateName, index)
-        return runExternalProcess(commands, directory, 5, TimeUnit.SECONDS)
+        val errors = files.map { Paths.get(project.workDir(templateName, index).absolutePath, it) }.filter { Files.exists(it) }
+        if (errors.isEmpty()) {
+            return StepResult(true, "All files not exists.")
+        } else {
+            return StepResult(false, "Found. files: ${errors.joinToString { "${it.fileName}" }}")
+        }
     }
 
     companion object {
