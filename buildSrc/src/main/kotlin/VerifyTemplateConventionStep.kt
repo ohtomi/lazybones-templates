@@ -9,20 +9,8 @@ open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var nam
 
     var args: Array<String> = emptyArray()
 
-    open fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
-            args
-
-    open fun directory(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
-            project.rootDir
-
-    open fun timeout(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
-            5L
-
     open fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
-        val commands = commands(templateName, templateVersion, index, item, project)
-        val directory = directory(templateName, templateVersion, index, item, project)
-        val timeout = timeout(templateName, templateVersion, index, item, project)
-        return runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
+        return runExternalProcess(args, project.rootDir, 5, TimeUnit.SECONDS)
     }
 
     fun runExternalProcess(commands: Array<String>, directory: File, timeout: Long, unit: TimeUnit): StepResult {
@@ -63,9 +51,11 @@ open class VerifyTemplateConventionGenerateStep : VerifyTemplateConventionStep("
 
     var params: Array<String> = emptyArray()
 
-    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
+    override fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
         val destDir = project.workDir(templateName, index).absolutePath
-        return arrayOf("lazybones", "create", templateName, templateVersion, destDir, *params)
+        val commands = arrayOf("lazybones", "create", templateName, templateVersion, destDir, *params)
+        val directory = project.rootDir
+        return runExternalProcess(commands, directory, 5, TimeUnit.SECONDS)
     }
 
     companion object {
@@ -78,15 +68,11 @@ open class VerifyTemplateConventionBuildStep : VerifyTemplateConventionStep("bui
 
     var tasks: Array<String> = emptyArray()
 
-    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
-        return arrayOf("./gradlew", "--no-daemon", *tasks)
+    override fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
+        val commands = arrayOf("./gradlew", "--no-daemon", *tasks)
+        val directory = project.workDir(templateName, index)
+        return runExternalProcess(commands, directory, 30, TimeUnit.SECONDS)
     }
-
-    override fun directory(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): File =
-            project.workDir(templateName, index)
-
-    override fun timeout(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
-            30L
 
     companion object {
         fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionBuildStep =
@@ -94,18 +80,14 @@ open class VerifyTemplateConventionBuildStep : VerifyTemplateConventionStep("bui
     }
 }
 
-abstract class VerifyTemplateConventionCheckStep(val description: String) : VerifyTemplateConventionStep("check:$description") {
-
-    override fun directory(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): File =
-            project.workDir(templateName, index)
-}
-
-open class VerifyTemplateConventionExistsFilesStep : VerifyTemplateConventionCheckStep("exists") {
+open class VerifyTemplateConventionExistsFilesStep : VerifyTemplateConventionStep("check:exists") {
 
     var files: Array<String> = emptyArray()
 
-    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
-        return arrayOf("/bin/sh", "-c", files.map { """ test -a "$it" """ }.joinToString(" && "))
+    override fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
+        val commands = arrayOf("/bin/sh", "-c", files.map { """ test -a "$it" """ }.joinToString(" && "))
+        val directory = project.workDir(templateName, index)
+        return runExternalProcess(commands, directory, 5, TimeUnit.SECONDS)
     }
 
     companion object {
@@ -114,12 +96,14 @@ open class VerifyTemplateConventionExistsFilesStep : VerifyTemplateConventionChe
     }
 }
 
-open class VerifyTemplateConventionNotExistsFilesStep : VerifyTemplateConventionCheckStep("not exists") {
+open class VerifyTemplateConventionNotExistsFilesStep : VerifyTemplateConventionStep("check:not exists") {
 
     var files: Array<String> = emptyArray()
 
-    override fun commands(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Array<String> {
-        return arrayOf("/bin/sh", "-c", files.map { """ ! test -a "$it" """ }.joinToString(" && "))
+    override fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
+        val commands = arrayOf("/bin/sh", "-c", files.map { """ ! test -a "$it" """ }.joinToString(" && "))
+        val directory = project.workDir(templateName, index)
+        return runExternalProcess(commands, directory, 5, TimeUnit.SECONDS)
     }
 
     companion object {
