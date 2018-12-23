@@ -22,29 +22,32 @@ open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var nam
         val commands = commands(templateName, templateVersion, index, item, project)
         val directory = directory(templateName, templateVersion, index, item, project)
         val timeout = timeout(templateName, templateVersion, index, item, project)
-        try {
-            val rc = runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
-            if (rc == 0) {
-                return StepResult(true, "Done.")
-            } else {
-                return StepResult(false, "Failed. Something wrong. rc: $rc")
-            }
-        } catch (th: Throwable) {
-            return StepResult(false, "Exception: ${th.message}")
-        }
+        return runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
     }
 
-    @Throws(IOException::class, InterruptedException::class)
-    fun runExternalProcess(commands: Array<String>, directory: File, timeout: Long, unit: TimeUnit): Int = ProcessBuilder().run {
-        command(*commands)
-        directory(directory)
-        start().run {
-            waitFor(timeout, unit)
-            if (isAlive) {
-                destroyForcibly()
-                waitFor(1, TimeUnit.SECONDS)
+    fun runExternalProcess(commands: Array<String>, directory: File, timeout: Long, unit: TimeUnit): StepResult {
+        try {
+            return ProcessBuilder().run {
+                command(*commands)
+                directory(directory)
+                start().run {
+                    waitFor(timeout, unit)
+                    if (isAlive) {
+                        destroyForcibly()
+                        waitFor(1, TimeUnit.SECONDS)
+                    }
+                    val rc = exitValue()
+                    if (rc == 0) {
+                        StepResult(true, "Done.")
+                    } else {
+                        StepResult(false, "Failed. Something wrong. rc: $rc")
+                    }
+                }
             }
-            exitValue()
+        } catch (e: IOException) {
+            return StepResult(false, "Exception: ${e.message}")
+        } catch (e: InterruptedException) {
+            return StepResult(false, "Exception: ${e.message}")
         }
     }
 
