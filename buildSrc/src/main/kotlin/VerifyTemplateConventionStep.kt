@@ -18,12 +18,20 @@ open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var nam
     open fun timeout(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project) =
             5L
 
-    @Throws(IOException::class, InterruptedException::class)
-    open fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): Int {
+    open fun execute(templateName: String, templateVersion: String, index: Int, item: VerifyTemplateConventionItem, project: Project): StepResult {
         val commands = commands(templateName, templateVersion, index, item, project)
         val directory = directory(templateName, templateVersion, index, item, project)
         val timeout = timeout(templateName, templateVersion, index, item, project)
-        return runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
+        try {
+            val rc = runExternalProcess(commands, directory, timeout, TimeUnit.SECONDS)
+            if (rc == 0) {
+                return StepResult(true, "Done.")
+            } else {
+                return StepResult(false, "Failed. Something wrong. rc: $rc")
+            }
+        } catch (th: Throwable) {
+            return StepResult(false, "Exception: ${th.message}")
+        }
     }
 
     @Throws(IOException::class, InterruptedException::class)
@@ -44,6 +52,8 @@ open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var nam
         fun newInstance(objectFactory: ObjectFactory): VerifyTemplateConventionStep =
                 objectFactory.newInstance("step")
     }
+
+    data class StepResult(val isSuucess: Boolean, val message: String?)
 }
 
 open class VerifyTemplateConventionGenerateStep : VerifyTemplateConventionStep("generate") {

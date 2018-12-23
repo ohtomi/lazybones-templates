@@ -2,7 +2,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
-import java.io.IOException
 
 open class VerifyTemplateTask : DefaultTask() {
 
@@ -27,27 +26,19 @@ open class VerifyTemplateTask : DefaultTask() {
         testCases.forEachIndexed { index: Int, item: VerifyTemplateConventionItem ->
             println("\n${index + 1} of ${testCases.size} $WALKING_EMOJI ...")
 
-            try {
-                val workDir = project.workDir(templateName, index)
-                workDir.deleteRecursively()
+            val workDir = project.workDir(templateName, index)
+            workDir.deleteRecursively()
 
-                item.steps.forEach {
-                    val returnCode = it.execute(templateName, templateVersion, index, item, project)
-                    if (returnCode != 0) {
-                        println("$SCREAM_EMOJI  [${it.name}] Failed. Something wrong. rc: $returnCode")
-                        return@forEachIndexed
-                    }
-                    println("$THUMBS_UP_EMOJI  [${it.name}] Done.")
+            item.steps.forEach {
+                val result = it.execute(templateName, templateVersion, index, item, project)
+                if (!result.isSuucess) {
+                    println("$SCREAM_EMOJI  [${it.name}] ${result.message}")
+                    return@forEachIndexed
                 }
-                println("$CHEQUERED_FLAG_EMOJI  Finished.")
-                success++
-            } catch (e: IOException) {
-                println("$SCREAM_EMOJI  Exception: ${e.message}")
-                return@forEachIndexed
-            } catch (e: InterruptedException) {
-                println("$SCREAM_EMOJI  Exception: ${e.message}")
-                return@forEachIndexed
+                println("$THUMBS_UP_EMOJI  [${it.name}] ${result.message}")
             }
+            println("$CHEQUERED_FLAG_EMOJI  Finished.")
+            success++
         }
 
         if (success < testCases.size) {
