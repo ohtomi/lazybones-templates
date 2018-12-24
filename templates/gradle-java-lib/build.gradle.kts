@@ -9,7 +9,9 @@ plugins {
     id("jacoco")
     id("net.ossindex.audit").version(Versions.net_ossindex_audit_gradle_plugin)
     id("jmfayard.github.io.gradle-kotlin-dsl-libs").version(Versions.jmfayard_github_io_gradle_kotlin_dsl_libs_gradle_plugin)
+<% if (is_application) { %>\
     application
+<% } %>\
     id("org.ajoberstar.reckon").version(Versions.org_ajoberstar_reckon_gradle_plugin)
     id("com.jfrog.bintray").version(Versions.com_jfrog_bintray_gradle_plugin)
     `maven-publish`
@@ -42,7 +44,9 @@ val bintrayOverride = false
 val jar by tasks.existing(Jar::class) {
     manifest(closureOf<Manifest> {
         attributes(mapOf(
+<% if (is_application) { %>\
                 "Main-Class" to props.manifestMainClass,
+<% } %>\
                 "Implementation-Title" to props.manifestImplementationTitle,
                 "Implementation-Version" to props.manifestImplementationVersion
         ))
@@ -85,10 +89,12 @@ val javadocJar by tasks.creating(Jar::class) {
     classifier = "javadoc"
     dependsOn("javadoc")
 }
+<% if (is_application) { %>\
 
 application {
     mainClassName = props.applicationMainClassName
 }
+<% } %>\
 
 // https://github.com/bintray/gradle-bintray-plugin
 val publicationName = "jcenterPublications"
