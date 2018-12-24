@@ -3,8 +3,9 @@ import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.util.ConfigureUtil
+import javax.inject.Inject
 
-open class VerifyTemplateConventionItem @javax.inject.Inject constructor(var name: String, val objectFactory: ObjectFactory) {
+open class VerifyTemplateConventionItem @Inject constructor(var name: String, val objectFactory: ObjectFactory) {
 
     var steps: MutableList<VerifyTemplateConventionStep> = mutableListOf()
 

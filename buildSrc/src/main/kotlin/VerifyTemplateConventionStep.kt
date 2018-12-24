@@ -6,8 +6,9 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-open class VerifyTemplateConventionStep @javax.inject.Inject constructor(var name: String) {
+open class VerifyTemplateConventionStep @Inject constructor(var name: String) {
 
     var args: Array<String> = emptyArray()
 
