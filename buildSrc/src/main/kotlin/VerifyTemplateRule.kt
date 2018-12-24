@@ -1,7 +1,6 @@
 import org.gradle.api.Project
 import org.gradle.api.Rule
 import org.gradle.api.tasks.Copy
-import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByName
@@ -36,19 +35,7 @@ class VerifyTemplateRule(
                 dependsOn(installTask)
             }
             val packageTask = findPackageTask(camelCaseTmplName) ?: return
-            project.tasks.create("ignoreTemplate$camelCaseTmplName", Delete::class).apply {
-                delete = setOf(
-                        // .gitignore
-                        "$templateDir/.gradle",
-                        "$templateDir/.lazybones",
-                        "$templateDir/.idea",
-                        "$templateDir/build",
-                        "$templateDir/*.iml",
-                        // buildSrc/.gitignore
-                        "$templateDir/buildSrc/.gradle",
-                        "$templateDir/buildSrc/build"
-                )
-
+            project.tasks.create("ignoreTemplate$camelCaseTmplName", IgnoreTemplateTask::class, templateDir).apply {
                 packageTask.dependsOn(this)
             }
         }
