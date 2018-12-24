@@ -14,7 +14,7 @@ props.repo_name = ask("name: (${projectDir.name}) ", projectDir.name, 'repo_name
 
 println ''
 println '[App or Lib]'
-props.is_application = ask('application? (no) [yes/no] ', 'no') ==~ /(?i)y(es)?/
+props.is_application = ask('application? (no) [yes/no] ', 'no', 'is_app') ==~ /(?i)y(es)?/
 
 props.copyright_name = System.getenv('GITHUB_COPYRIGHT_NAME') ?: 'COPYRIGHT_NAME'
 props.copyright_year = Calendar.getInstance().get(Calendar.YEAR)
