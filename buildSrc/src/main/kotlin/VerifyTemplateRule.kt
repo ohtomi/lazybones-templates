@@ -1,6 +1,8 @@
 import org.gradle.api.Project
 import org.gradle.api.Rule
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.Delete
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByName
 import uk.co.cacoethes.gradle.lazybones.LazybonesConventions
@@ -33,6 +35,22 @@ class VerifyTemplateRule(
 
                 dependsOn(installTask)
             }
+            val packageTask = findPackageTask(camelCaseTmplName) ?: return
+            project.tasks.create("ignoreTemplate$camelCaseTmplName", Delete::class).apply {
+                delete = setOf(
+                        // .gitignore
+                        "$templateDir/.gradle",
+                        "$templateDir/.lazybones",
+                        "$templateDir/.idea",
+                        "$templateDir/build",
+                        "$templateDir/*.iml",
+                        // buildSrc/.gitignore
+                        "$templateDir/buildSrc/.gradle",
+                        "$templateDir/buildSrc/build"
+                )
+
+                packageTask.dependsOn(this)
+            }
         }
     }
 
@@ -44,6 +62,9 @@ class VerifyTemplateRule(
 
     private fun findInstallTask(camelCaseTmplName: String): Copy? =
             project.tasks.getByName("installTemplate$camelCaseTmplName", Copy::class)
+
+    private fun findPackageTask(camelCaseTmplName: String): Zip? =
+            project.tasks.getByName("packageTemplate$camelCaseTmplName", Zip::class)
 
     override fun getDescription(): String =
             "verifyTemplate<TpmlName> - Verifies the template in the directory matching the task name"
