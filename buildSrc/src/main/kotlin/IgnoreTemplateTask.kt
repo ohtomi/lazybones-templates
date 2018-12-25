@@ -1,20 +1,21 @@
 import org.gradle.api.tasks.Delete
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.inject.Inject
 
-open class IgnoreTemplateTask @Inject constructor(val templateDir: File) : Delete() {
+open class IgnoreTemplateTask @Inject constructor(templateDir: File) : Delete() {
 
     init {
-        delete = setOf(
-                // .gitignore
-                "$templateDir/.gradle",
-                "$templateDir/.lazybones",
-                "$templateDir/.idea",
-                "$templateDir/build",
-                "$templateDir/*.iml",
-                // buildSrc/.gitignore
-                "$templateDir/buildSrc/.gradle",
-                "$templateDir/buildSrc/build"
-        )
+        delete = templateDir.walk().fold(mutableSetOf<Any>()) { acc, file ->
+            if (file.name == "gitignore") {
+                val lines = Files.readAllLines(file.toPath())
+                        .filter { !it.trim().isEmpty() }
+                        .filter { !it.trimStart().startsWith("#") }
+                        .map { Paths.get(file.parent, it).toString() }
+                acc.addAll(lines)
+            }
+            acc
+        }
     }
 }
