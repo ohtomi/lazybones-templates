@@ -34,79 +34,43 @@ lazybones {
 }
 
 lazybonesVerifier {
-    template {
-        name = "gradle-java-lib"
-        gradleGenerate(
-                "-Partifact_name=FooBarBaz",
-                "-Partifact_group=com.exmaple",
-                "-Prepo_owner=example",
-                "-Prepo_name=foobarbaz",
-                "-Pis_app=yes"
-        )
-        existsFiles(
-                // rename files
-                ".gitignore",
-                "buildSrc/.gitignore"
-        )
-        notExistsFiles(
-                // build outputs
-                ".gradle",
-                "build",
-                "buildSrc/.gradle",
-                "buildSrc/build",
-                // rename files
-                "gitignore",
-                "buildSrc/gitignore"
-        )
-        gradleBuild("clean", "build", "syncLibs", "bintrayUpload")
-    }
-    template {
-        name = "gradle-java-lib"
-        gradleGenerate(
-                "-Partifact_name=FooBarBaz",
-                "-Partifact_group=com.exmaple",
-                "-Prepo_owner=example",
-                "-Prepo_name=foobarbaz",
-                "-Pis_app=no"
-        )
-        gradleBuild("clean", "build")
-    }
-
-    template {
-        name = "gradle-kotlin-lib"
-        gradleGenerate(
-                "-Partifact_name=FooBarBaz",
-                "-Partifact_group=com.exmaple",
-                "-Prepo_owner=example",
-                "-Prepo_name=foobarbaz",
-                "-Pis_app=yes"
-        )
-        existsFiles(
-                // rename files
-                ".gitignore",
-                "buildSrc/.gitignore"
-        )
-        notExistsFiles(
-                // build outputs
-                ".gradle",
-                "build",
-                "buildSrc/.gradle",
-                "buildSrc/build",
-                // rename files
-                "gitignore",
-                "buildSrc/gitignore"
-        )
-        gradleBuild("clean", "build", "syncLibs", "bintrayUpload")
-    }
-    template {
-        name = "gradle-kotlin-lib"
-        gradleGenerate(
-                "-Partifact_name=FooBarBaz",
-                "-Partifact_group=com.exmaple",
-                "-Prepo_owner=example",
-                "-Prepo_name=foobarbaz",
-                "-Pis_app=no"
-        )
-        gradleBuild("clean", "build")
+    ["gradle-java-lib", "gradle-kotlin-lib"].each { templateName ->
+        template {
+            name = templateName
+            gradleGenerate(
+                    "-Partifact_name=FooBarBaz",
+                    "-Partifact_group=com.exmaple",
+                    "-Prepo_owner=example",
+                    "-Prepo_name=foobarbaz",
+                    "-Pis_app=yes"
+            )
+            existsFiles(
+                    // rename files
+                    ".gitignore",
+                    "buildSrc/.gitignore"
+            )
+            notExistsFiles(
+                    // build outputs
+                    ".gradle",
+                    "build",
+                    "buildSrc/.gradle",
+                    "buildSrc/build",
+                    // rename files
+                    "gitignore",
+                    "buildSrc/gitignore"
+            )
+            gradleBuild("clean", "build", "syncLibs", "bintrayUpload")
+        }
+        template {
+            name = templateName
+            gradleGenerate(
+                    "-Partifact_name=FooBarBaz",
+                    "-Partifact_group=com.exmaple",
+                    "-Prepo_owner=example",
+                    "-Prepo_name=foobarbaz",
+                    "-Pis_app=no"
+            )
+            gradleBuild("clean", "build")
+        }
     }
 }
