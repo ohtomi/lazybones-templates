@@ -31,6 +31,8 @@ lazybones {
     vcsUrl = "https://github.com/ohtomi/lazybones-templates"
 
     publish = true
+
+    packageExclude("Makefile")
 }
 
 lazybonesVerifier {
